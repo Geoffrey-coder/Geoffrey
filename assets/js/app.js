@@ -992,9 +992,10 @@
     const fallbackRepo = github.owner && github.repo ? `${github.owner}/${github.repo}` : "";
     return {
       publicRepo: guestbook.publicRepo || fallbackRepo,
-      issueTerm: guestbook.issueTerm || "pathname",
+      issueTerm: guestbook.issueTerm || "url",
       label: guestbook.label || "guestbook",
-      privateEmail: guestbook.privateEmail || profile.email || ""
+      privateEmail: guestbook.privateEmail || profile.email || "",
+      embed: Boolean(guestbook.embed)
     };
   }
 
@@ -1086,17 +1087,35 @@
           <p>公开留言使用 GitHub Issues 评论体系。访客需要登录 GitHub，只能发表评论，不能写入你的站点文件。</p>
           <div class="guestbook-action-row">
             <a class="primary-button" href="${escapeHtml(githubNewGuestbookIssueUrl())}" target="_blank" rel="noopener noreferrer">${icon("message-square-plus")}在 GitHub 留言</a>
-            <a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装评论组件</a>
+            <button class="secondary-button" type="button" id="guestbook-public-refresh">${icon("refresh-cw")}刷新留言</button>
             <a class="secondary-button" href="${escapeHtml(githubIssueSearchUrl())}" target="_blank" rel="noopener noreferrer">${icon("shield-check")}管理 / 删除留言</a>
+            <a class="secondary-button" href="${escapeHtml(githubRepoUrl("/settings"))}" target="_blank" rel="noopener noreferrer">${icon("settings")}开启 Issues</a>
+            <a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装网页评论组件</a>
           </div>
           ${
             settings.publicRepo
               ? `<div class="guestbook-thread" id="guestbook-public-thread" aria-live="polite">
+                  <div class="guestbook-public-status" id="guestbook-public-status">正在读取 GitHub 公开留言...</div>
+                  <div class="guestbook-public-list" id="guestbook-public-list">
+                    <div class="loading-panel compact">
+                      <div class="loading-mark"></div>
+                      <p>正在载入留言</p>
+                    </div>
+                  </div>
+                </div>
+                ${
+                  settings.embed
+                    ? `<div class="guestbook-embed" id="guestbook-utterances-embed">
                   <div class="loading-panel compact">
                     <div class="loading-mark"></div>
-                    <p>正在载入公开留言区</p>
+                    <p>正在载入网页评论组件</p>
                   </div>
                 </div>`
+                    : `<div class="guestbook-install-note">
+                        ${icon("info")}
+                        <span>网页内直接评论需要安装 utterances。未安装时，公开留言会通过上方 GitHub 入口完成，站内会自动读取并展示。</span>
+                      </div>`
+                }`
               : '<div class="empty-state">公开留言区还没有配置 GitHub 仓库。</div>'
           }
         </section>
@@ -1120,9 +1139,10 @@
   }
 
   function mountUtterances() {
-    const container = document.getElementById("guestbook-public-thread");
-    if (!container || container.dataset.mounted === "true") return;
     const settings = guestbookSettings();
+    if (!settings.embed) return;
+    const container = document.getElementById("guestbook-utterances-embed");
+    if (!container || container.dataset.mounted === "true") return;
     if (!settings.publicRepo) return;
     container.dataset.mounted = "true";
     container.innerHTML = "";
@@ -1689,6 +1709,7 @@
         <div class="button-row">
           <button class="primary-button" type="button" id="guestbook-admin-load">${icon("messages-square")}载入公开留言</button>
           <a class="secondary-button" href="${escapeHtml(githubIssueSearchUrl())}" target="_blank" rel="noopener noreferrer">${icon("external-link")}打开 GitHub 管理页</a>
+          <a class="secondary-button" href="${escapeHtml(githubRepoUrl("/settings"))}" target="_blank" rel="noopener noreferrer">${icon("settings")}仓库设置</a>
           <a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装评论组件</a>
         </div>
         <div class="status-line" id="guestbook-admin-status">${settings.publicRepo ? `仓库：${escapeHtml(settings.publicRepo)}` : "公开留言仓库未配置"}</div>
@@ -1911,6 +1932,30 @@
     return response.text();
   }
 
+  async function publicGithubRequest(path) {
+    const settings = guestbookSettings();
+    if (!settings.publicRepo) throw new Error("公开留言仓库未配置");
+    const response = await fetch(`https://api.github.com/repos/${settings.publicRepo}${path}`, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28"
+      }
+    });
+
+    if (!response.ok) {
+      let message = response.statusText;
+      try {
+        const body = await response.json();
+        message = body.message || message;
+      } catch {
+        // Ignore JSON parse errors for GitHub error bodies.
+      }
+      throw new Error(message);
+    }
+
+    return response.json();
+  }
+
   async function getContentSha(repoPath) {
     const session = studioSession();
     try {
@@ -1949,10 +1994,11 @@
     return text.length > 220 ? `${text.slice(0, 220)}...` : text;
   }
 
-  async function loadGuestbookEntries() {
+  async function fetchGuestbookEntries(requester, { includeClosed = true } = {}) {
     const settings = guestbookSettings();
     const label = encodeURIComponent(settings.label || "guestbook");
-    const issues = await githubRequest(`/issues?state=all&labels=${label}&per_page=40`);
+    const stateFilter = includeClosed ? "all" : "open";
+    const issues = await requester(`/issues?state=${stateFilter}&labels=${label}&per_page=40`);
     const entries = [];
 
     for (const issue of issues.filter((item) => !item.pull_request)) {
@@ -1968,7 +2014,7 @@
         state: issue.state
       });
 
-      const comments = await githubRequest(`/issues/${issue.number}/comments?per_page=100`);
+      const comments = await requester(`/issues/${issue.number}/comments?per_page=100`);
       comments.forEach((comment) => {
         entries.push({
           type: "comment",
@@ -1985,7 +2031,15 @@
       });
     }
 
-    return entries;
+    return entries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async function loadGuestbookEntries() {
+    return fetchGuestbookEntries(githubRequest, { includeClosed: true });
+  }
+
+  async function loadPublicGuestbookEntries() {
+    return fetchGuestbookEntries(publicGithubRequest, { includeClosed: false });
   }
 
   function renderGuestbookAdminEntries(entries) {
@@ -2017,6 +2071,79 @@
       )
       .join("");
     refreshIcons();
+  }
+
+  function renderGuestbookPublicEntries(entries) {
+    const list = document.getElementById("guestbook-public-list");
+    const status = document.getElementById("guestbook-public-status");
+    if (!list) return;
+    if (!entries.length) {
+      list.innerHTML = `
+        <div class="guestbook-empty-card">
+          ${icon("message-circle")}
+          <h3>还没有公开留言</h3>
+          <p>成为第一个来访的人，点击上方按钮去 GitHub 留言。</p>
+        </div>
+      `;
+      if (status) status.textContent = "暂无留言。";
+      refreshIcons();
+      return;
+    }
+
+    list.innerHTML = entries
+      .slice(0, 12)
+      .map(
+        (entry) => `
+          <article class="guestbook-public-entry">
+            <div class="guestbook-entry-avatar">${escapeHtml((entry.user || "?").slice(0, 1).toUpperCase())}</div>
+            <div>
+              <div class="guestbook-entry-meta">
+                <strong>${escapeHtml(entry.user)}</strong>
+                <span>${escapeHtml(entry.type === "comment" ? "回复" : "留言")} · ${formatDate(entry.createdAt)}</span>
+              </div>
+              <p>${escapeHtml(guestbookEntryExcerpt(entry.body) || "无内容")}</p>
+              <div class="button-row">
+                <a class="secondary-button compact-button" href="${escapeHtml(entry.url)}" target="_blank" rel="noopener noreferrer">${icon("reply")}回复 / 管理</a>
+              </div>
+            </div>
+          </article>
+        `
+      )
+      .join("");
+    if (status) status.textContent = `已读取 ${entries.length} 条公开记录。`;
+    refreshIcons();
+  }
+
+  async function mountGuestbookPublicFeed() {
+    const list = document.getElementById("guestbook-public-list");
+    const status = document.getElementById("guestbook-public-status");
+    if (!list) return;
+    if (status) status.textContent = "正在读取 GitHub 公开留言...";
+    list.innerHTML = `
+      <div class="loading-panel compact">
+        <div class="loading-mark"></div>
+        <p>正在载入留言</p>
+      </div>
+    `;
+    try {
+      const entries = await loadPublicGuestbookEntries();
+      renderGuestbookPublicEntries(entries);
+    } catch (error) {
+      const hint = /rate limit/i.test(error.message)
+        ? "GitHub 匿名读取额度暂时用完；访客仍可点击上方按钮留言，站长可在写作台用 Token 管理。"
+        : /403|forbidden|已禁止/i.test(error.message)
+          ? "GitHub 暂时拒绝了公开读取，通常是 Issues 未开启或匿名 API 受限。"
+        : `读取失败：${error.message}`;
+      if (status) status.textContent = hint;
+      list.innerHTML = `
+        <div class="guestbook-empty-card">
+          ${icon("github")}
+          <h3>暂时不能读取留言流</h3>
+          <p>可以继续使用上方 GitHub 留言入口。若仓库 Issues 未启用，请先在仓库 Settings 中开启 Issues；如果只是 API 限制，稍后刷新即可。</p>
+        </div>
+      `;
+      refreshIcons();
+    }
   }
 
   async function closeGuestbookIssue(issueNumber) {
@@ -2423,6 +2550,13 @@
       });
     }
 
+    const guestbookPublicRefresh = document.getElementById("guestbook-public-refresh");
+    if (guestbookPublicRefresh) {
+      guestbookPublicRefresh.addEventListener("click", () => {
+        mountGuestbookPublicFeed();
+      });
+    }
+
     const maintenanceFile = document.getElementById("maintenance-file");
     const maintenanceJson = document.getElementById("maintenance-json");
     const maintenanceStatus = document.getElementById("maintenance-status");
@@ -2572,7 +2706,10 @@
 
     bindEvents(route);
     refreshIcons();
-    if (route.path === "/guestbook") mountUtterances();
+    if (route.path === "/guestbook") {
+      mountGuestbookPublicFeed();
+      mountUtterances();
+    }
     app.focus({ preventScroll: true });
     window.scrollTo({ top: 0, behavior: "auto" });
   }

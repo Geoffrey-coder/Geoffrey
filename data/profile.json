@@ -46,6 +46,7 @@
     "publicRepo": "Geoffrey-coder/Geoffrey",
     "issueTerm": "url",
     "label": "guestbook",
-    "privateEmail": ""
+    "privateEmail": "",
+    "embed": false
   }
 }
