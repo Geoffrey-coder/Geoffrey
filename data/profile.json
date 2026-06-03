@@ -7,8 +7,9 @@
   "email": "",
   "aesthetic": {
     "title": "Geoffrey 的研究书房",
-    "note": "欧式复古、羊皮纸、深木书架、古典音乐与长期主义研究秩序。",
-    "hero": "resources/uploads/vintage-library-hero.png",
+      "note": "欧式复古、羊皮纸、深木书架、古典音乐与长期主义研究秩序。",
+      "room": "resources/uploads/classical-room-scene.png",
+      "hero": "resources/uploads/vintage-library-hero.png",
     "poster": "resources/uploads/pastel-desk.png",
     "palette": [
       { "name": "奶油白", "color": "#fffaf0" },

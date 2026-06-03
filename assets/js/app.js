@@ -412,159 +412,148 @@
       .join("");
   }
 
+  function renderRoomHotspot(item) {
+    return `
+      <a
+        class="room-hotspot room-hotspot-${escapeHtml(item.key)} ${item.kind ? `is-${escapeHtml(item.kind)}` : ""}"
+        href="${escapeHtml(item.href)}"
+        style="${escapeHtml(item.style)}"
+        data-room-target="${escapeHtml(item.key)}"
+        data-room-kind="${escapeHtml(item.kind || "panel")}"
+      >
+        <span class="room-object-glow" aria-hidden="true"></span>
+        <span class="room-drawer-face" aria-hidden="true"></span>
+        <span class="room-plaque">
+          ${icon(item.icon)}
+          <strong>${escapeHtml(item.title)}</strong>
+          <small>${escapeHtml(item.subtitle || "")}</small>
+        </span>
+      </a>
+    `;
+  }
+
   function renderHome() {
     const profile = state.site.profile || {};
     const courses = state.site.courses || [];
     const workflows = state.site.workflows || { stages: [], projects: [] };
     const plans = state.site.plans || [];
-    const heroImage = profile.aesthetic?.hero || profile.aesthetic?.poster || "resources/uploads/vintage-library-hero.png";
-    const heroBackground = assetUrl(heroImage);
+    const roomImage = assetUrl(profile.aesthetic?.room || "resources/uploads/classical-room-scene.png");
     const totalNotes = (state.site.posts || []).length + (state.site.diary || []).length + courses.length;
-    const compassLinks = [
-      { href: "#/courses", icon: "book-open", label: "课程", note: "Notes" },
-      { href: "#/workflow", icon: "microscope", label: "论文", note: "Works" },
-      { href: "#/ideas", icon: "folder-open", label: "档案", note: "Desk" },
-      { href: "#/plans", icon: "calendar-check", label: "计划", note: "Plans" },
-      { href: "#/friends", icon: "link", label: "友链", note: "Friends" }
+    const roomHotspots = [
+      {
+        key: "about",
+        href: "#/about",
+        icon: "user-round",
+        title: "关于 / 归档",
+        subtitle: "人物肖像",
+        kind: "portrait",
+        style: "--x:22%;--y:29%;--w:14%;--h:20%;--z:1;"
+      },
+      {
+        key: "workflow",
+        href: "#/workflow",
+        icon: "microscope",
+        title: "研究与论文",
+        subtitle: "中央书柜",
+        kind: "cabinet",
+        style: "--x:45%;--y:28%;--w:25%;--h:26%;--z:3;"
+      },
+      {
+        key: "resources",
+        href: "#/resources",
+        icon: "archive",
+        title: "资源抽屉",
+        subtitle: "PDF / 数据 / 文件",
+        kind: "drawer",
+        style: "--x:49%;--y:54%;--w:29%;--h:17%;--z:4;"
+      },
+      {
+        key: "courses",
+        href: "#/courses",
+        icon: "book-open",
+        title: "课程笔记",
+        subtitle: `${courses.length} 门课程`,
+        kind: "desk",
+        style: "--x:24%;--y:69%;--w:28%;--h:20%;--z:6;"
+      },
+      {
+        key: "friends",
+        href: "#/friends",
+        icon: "music-2",
+        title: "钢琴与友链",
+        subtitle: "同伴 / 音乐",
+        kind: "piano",
+        style: "--x:82%;--y:48%;--w:25%;--h:28%;--z:5;"
+      },
+      {
+        key: "plans",
+        href: "#/plans",
+        icon: "calendar-check",
+        title: "计划",
+        subtitle: `${plans.length} 项安排`,
+        kind: "table",
+        style: "--x:67%;--y:78%;--w:21%;--h:18%;--z:7;"
+      },
+      {
+        key: "ideas",
+        href: "#/ideas",
+        icon: "folder-open",
+        title: "研究档案",
+        subtitle: "个人口令",
+        kind: "drawer",
+        style: "--x:88%;--y:78%;--w:14%;--h:20%;--z:8;"
+      }
     ];
 
     app.innerHTML = `
-      <div class="library-page">
-        <aside class="library-left">
-          <section class="portrait-panel">
-            <img class="portrait-avatar" src="${escapeHtml(profile.avatar || "")}" alt="${escapeHtml(profile.nickname || "Geoffrey")}" />
-            <div>
-              <p class="script-kicker">Ad meliora, semper.</p>
-              <h1>${escapeHtml(profile.nickname || "Geoffrey")}</h1>
-              <p>${escapeHtml(profile.bio || "")}</p>
-            </div>
-          </section>
+      <section class="room-experience" style="--room-image:url('${escapeHtml(roomImage)}')">
+        <div class="room-scene" id="room-scene">
+          <div class="room-bg" aria-hidden="true"></div>
+          <div class="room-vignette" aria-hidden="true"></div>
+          <div class="room-light room-light-window" aria-hidden="true"></div>
+          <div class="room-light room-light-lamp" aria-hidden="true"></div>
+          <div class="room-dust" aria-hidden="true"></div>
 
-          <section class="music-panel">
+          <header class="room-title-plaque">
+            <span class="script-kicker">Bibliotheca Geoffrey</span>
+            <h1>${escapeHtml(profile.siteTitle || "Geoffrey 的研究书房")}</h1>
+            <p>阅读 · 研究 · 音乐 · 长期思考</p>
+          </header>
+
+          <div class="room-brand-card">
+            <img src="${escapeHtml(profile.avatar || "")}" alt="${escapeHtml(profile.nickname || "Geoffrey")}" />
+            <div>
+              <strong>${escapeHtml(profile.nickname || "Geoffrey")}</strong>
+              <span>Ad meliora, semper.</span>
+            </div>
+          </div>
+
+          <div class="room-hotspot-layer">
+            ${roomHotspots.map(renderRoomHotspot).join("")}
+          </div>
+
+          <div class="room-status-card">
+            <div>${renderLibraryMetric("scroll-text", "笔记", String(totalNotes))}</div>
+            <div>${renderLibraryMetric("file-stack", "项目", String((workflows.projects || []).length))}</div>
+            <div>${renderLibraryMetric("book-open", "课程", String(courses.length))}</div>
+          </div>
+
+          <aside class="room-music-card">
             <div class="vinyl-mark">${icon("music-2")}</div>
-            <div class="music-copy">
+            <div>
               <span>正在聆听</span>
               <strong>Piano Sonata No.14</strong>
               <small>Beethoven · Moonlight</small>
             </div>
-            <p class="music-note">慢板、月光与书页翻动声。</p>
             <div class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-          </section>
+          </aside>
 
-          <section class="quote-panel">
-            <p>音乐是流动的建筑，建筑是凝固的音乐。</p>
-            <span>约翰 · 沃尔夫冈 · 冯 · 歌德</span>
-          </section>
-        </aside>
-
-        <section class="library-main">
-          <section class="library-hero" style="--hero-image:url('${escapeHtml(heroBackground)}')">
-            <div class="hero-copy">
-              <span class="script-kicker">Bibliotheca Geoffrey</span>
-              <h2>Geoffrey 的研究书房</h2>
-              <p>阅读、研究、音乐与长期思考。把课程笔记、论文流程、计划和手记收进一座有秩序的私人图书馆。</p>
-              <div class="library-metrics">
-                ${renderLibraryMetric("scroll-text", "笔记条目", String(totalNotes))}
-                ${renderLibraryMetric("file-stack", "研究项目", String((workflows.projects || []).length))}
-                ${renderLibraryMetric("book-open", "课程档案", String(courses.length))}
-                ${renderLibraryMetric("folder-open", "研究档案", "个人口令")}
-              </div>
-            </div>
-          </section>
-
-          <section class="library-section courses-section">
-            <div class="ornate-heading">
-              <div>
-                <h2>${icon("book-marked")}课程笔记</h2>
-                <p>每门课独立归档，适合沉淀定理、证明、公式和例题。</p>
-              </div>
-              <a href="#/courses">查看全部</a>
-            </div>
-            <div class="course-grid">${courses.slice(0, 6).map(renderCourseCard).join("")}</div>
-          </section>
-
-          <section class="library-section workflow-section">
-            <div class="ornate-heading">
-              <div>
-                <h2>${icon("workflow")}研究工作与论文</h2>
-                <p>公开成果、研究方向和可复用流程集中整理。</p>
-              </div>
-              <a href="#/workflow">查看成果</a>
-            </div>
-            <div class="workflow-ribbon">${(workflows.stages || []).map(renderWorkflowStage).join("")}</div>
-            <div class="project-ledger">
-              ${(workflows.projects || [])
-                .slice(0, 2)
-                .map(
-                  (project) => `
-                    <a href="${escapeHtml(project.url || "#/workflow")}">
-                      <span>${escapeHtml(project.date || "")}</span>
-                      <strong>${escapeHtml(project.title)}</strong>
-                      <em>${escapeHtml(project.type || "")}</em>
-                      <small>${escapeHtml(project.status || "")}</small>
-                    </a>
-                  `
-                )
-                .join("")}
-            </div>
-          </section>
-        </section>
-
-        <aside class="library-right">
-          <section class="compass-panel" aria-label="研究书房导航">
-            <div class="compass-rose" aria-hidden="true"></div>
-            <div class="compass-medallion">
-              <span>G</span>
-              <small>Study Atlas</small>
-            </div>
-            ${compassLinks
-              .map(
-                (item, index) => `
-                  <a class="compass-item compass-item-${index + 1}" href="${item.href}">
-                    ${icon(item.icon)}
-                    <strong>${item.label}</strong>
-                    <small>${item.note}</small>
-                  </a>
-                `
-              )
-              .join("")}
-          </section>
-
-          <section class="library-section compact friends-section">
-            <div class="ornate-heading">
-              <div>
-                <h2>${icon("link")}友链</h2>
-                <p>学术路上的同伴。</p>
-              </div>
-              <a href="#/friends">全部</a>
-            </div>
-            <div class="library-friends">${renderFriendTiles(3)}</div>
-          </section>
-
-          <section class="library-section compact plan-section">
-            <div class="ornate-heading">
-              <div>
-                <h2>${icon("calendar-check")}计划</h2>
-                <p>让长期主义有节拍。</p>
-              </div>
-              <a href="#/plans">查看</a>
-            </div>
-            <div class="plan-scroll">
-              ${plans
-                .slice(0, 3)
-                .map(
-                  (plan) => `
-                    <article>
-                      <strong>${escapeHtml(plan.title)}</strong>
-                      <span>${escapeHtml(plan.status || "")} · ${Number(plan.progress || 0)}%</span>
-                    </article>
-                  `
-                )
-                .join("")}
-            </div>
-          </section>
-        </aside>
-      </div>
+          <blockquote class="room-quote">
+            <p>我从未止步于抵达答案的旅程。</p>
+            <cite>Per aspera ad astra.</cite>
+          </blockquote>
+        </div>
+      </section>
     `;
   }
 
@@ -1780,6 +1769,21 @@
       });
     });
 
+    app.querySelectorAll("[data-room-target]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reducedMotion) return;
+        event.preventDefault();
+        const href = link.getAttribute("href");
+        const scene = document.getElementById("room-scene");
+        scene?.classList.add("is-transitioning");
+        link.classList.add("is-opening");
+        window.setTimeout(() => {
+          location.hash = href.replace(/^#/, "");
+        }, 430);
+      });
+    });
+
     app.querySelectorAll("[data-toggle-side]").forEach((button) => {
       button.addEventListener("click", () => {
         const side = button.dataset.toggleSide;
@@ -2056,6 +2060,7 @@
     const route = parseRoute();
     setActiveNav(route.path);
     document.title = state.site.profile?.siteTitle || "个人博客";
+    app.classList.toggle("is-room-home", route.path === "/");
 
     if (route.path === "/") renderHome();
     else if (route.path === "/courses") renderCourses();

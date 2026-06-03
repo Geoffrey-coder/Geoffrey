@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-03T06:27:49.757Z",
+  "generatedAt": "2026-06-03T06:51:36.667Z",
   "profile": {
     "siteTitle": "Geoffrey 的研究书房",
     "nickname": "Geoffrey",
@@ -10,6 +10,7 @@
     "aesthetic": {
       "title": "Geoffrey 的研究书房",
       "note": "欧式复古、羊皮纸、深木书架、古典音乐与长期主义研究秩序。",
+      "room": "resources/uploads/classical-room-scene.png",
       "hero": "resources/uploads/vintage-library-hero.png",
       "poster": "resources/uploads/pastel-desk.png",
       "palette": [
@@ -487,5 +488,5 @@
       "count": 1
     }
   ],
-  "contentHash": "9bbe5c3030a0"
+  "contentHash": "8162ac430ea0"
 }
