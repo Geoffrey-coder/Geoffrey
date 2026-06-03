@@ -1,15 +1,16 @@
 {
-  "generatedAt": "2026-06-03T01:55:17.589Z",
+  "generatedAt": "2026-06-03T03:15:20.682Z",
   "profile": {
-    "siteTitle": "Geoffrey 的书桌",
+    "siteTitle": "Geoffrey 的研究书房",
     "nickname": "Geoffrey",
     "avatar": "resources/uploads/avatar.png",
     "bio": "记录研究、阅读、写作和日常计划。这里尽量保持轻盈，方便长期维护。",
     "location": "China",
     "email": "",
     "aesthetic": {
-      "title": "小而可爱的书桌",
-      "note": "奶油白、棉花粉、粉蓝、黄油色和一点抹茶绿，适合长文阅读，也保留一点软乎乎的个性。",
+      "title": "Geoffrey 的研究书房",
+      "note": "欧式复古、羊皮纸、深木书架、古典音乐与长期主义研究秩序。",
+      "hero": "resources/uploads/vintage-library-hero.png",
       "poster": "resources/uploads/pastel-desk.png",
       "palette": [
         {
@@ -146,6 +147,100 @@
       ]
     }
   ],
+  "courses": [
+    {
+      "title": "概率论",
+      "subtitle": "随机变量、分布、极限定理",
+      "icon": "dice-5",
+      "progress": 68,
+      "url": "#/blog?category=概率论"
+    },
+    {
+      "title": "随机过程",
+      "subtitle": "Poisson 过程、Markov 链、Brownian motion",
+      "icon": "activity",
+      "progress": 42,
+      "url": "#/blog?category=随机过程"
+    },
+    {
+      "title": "实分析",
+      "subtitle": "测度、积分、收敛",
+      "icon": "function-square",
+      "progress": 55,
+      "url": "#/blog?category=实分析"
+    },
+    {
+      "title": "计量经济学",
+      "subtitle": "识别、估计、推断",
+      "icon": "bar-chart-3",
+      "progress": 76,
+      "url": "#/blog?category=计量经济学"
+    },
+    {
+      "title": "因果推断",
+      "subtitle": "DID、IV、RDD、匹配",
+      "icon": "git-branch",
+      "progress": 36,
+      "url": "#/blog?category=因果推断"
+    },
+    {
+      "title": "金融数学",
+      "subtitle": "衍生品、风险中性定价、鞅方法",
+      "icon": "landmark",
+      "progress": 28,
+      "url": "#/blog?category=金融数学"
+    }
+  ],
+  "workflows": {
+    "stages": [
+      {
+        "title": "文献阅读",
+        "icon": "book-open",
+        "description": "阅读文献、记录脉络、建立笔记"
+      },
+      {
+        "title": "数据处理",
+        "icon": "database",
+        "description": "数据清洗、变量生成、探索分析"
+      },
+      {
+        "title": "模型推导",
+        "icon": "sigma",
+        "description": "识别假设、理论推导、公式证明"
+      },
+      {
+        "title": "实证分析",
+        "icon": "scatter-chart",
+        "description": "回归、稳健性、机制检验"
+      },
+      {
+        "title": "写作版本",
+        "icon": "pen-line",
+        "description": "初稿、修改、回复审稿意见"
+      },
+      {
+        "title": "结果归档",
+        "icon": "archive",
+        "description": "代码、图表、数据与 PDF 备份"
+      }
+    ],
+    "projects": [
+      {
+        "title": "资产定价中的非线性信息与市场波动",
+        "date": "2026-06-03",
+        "status": "进行中",
+        "type": "实证研究",
+        "url": "#/blog?category=研究札记"
+      },
+      {
+        "title": "机器学习在因果推断中的应用综述",
+        "date": "2026-05-18",
+        "status": "文献综述",
+        "type": "论文草稿",
+        "url": "#/blog?tag=研究"
+      }
+    ]
+  },
   "posts": [
     {
       "type": "post",
@@ -314,5 +409,5 @@
       "count": 1
     }
   ],
-  "contentHash": "cb2a5d8675c0"
+  "contentHash": "4c35abcbe467"
 }

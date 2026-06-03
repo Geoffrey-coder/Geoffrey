@@ -1,0 +1,44 @@
+[
+  {
+    "title": "概率论",
+    "subtitle": "随机变量、分布、极限定理",
+    "icon": "dice-5",
+    "progress": 68,
+    "url": "#/blog?category=概率论"
+  },
+  {
+    "title": "随机过程",
+    "subtitle": "Poisson 过程、Markov 链、Brownian motion",
+    "icon": "activity",
+    "progress": 42,
+    "url": "#/blog?category=随机过程"
+  },
+  {
+    "title": "实分析",
+    "subtitle": "测度、积分、收敛",
+    "icon": "function-square",
+    "progress": 55,
+    "url": "#/blog?category=实分析"
+  },
+  {
+    "title": "计量经济学",
+    "subtitle": "识别、估计、推断",
+    "icon": "bar-chart-3",
+    "progress": 76,
+    "url": "#/blog?category=计量经济学"
+  },
+  {
+    "title": "因果推断",
+    "subtitle": "DID、IV、RDD、匹配",
+    "icon": "git-branch",
+    "progress": 36,
+    "url": "#/blog?category=因果推断"
+  },
+  {
+    "title": "金融数学",
+    "subtitle": "衍生品、风险中性定价、鞅方法",
+    "icon": "landmark",
+    "progress": 28,
+    "url": "#/blog?category=金融数学"
+  }
+]

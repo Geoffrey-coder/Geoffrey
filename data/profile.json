@@ -1,13 +1,14 @@
 {
-  "siteTitle": "Geoffrey 的书桌",
+  "siteTitle": "Geoffrey 的研究书房",
   "nickname": "Geoffrey",
   "avatar": "resources/uploads/avatar.png",
   "bio": "记录研究、阅读、写作和日常计划。这里尽量保持轻盈，方便长期维护。",
   "location": "China",
   "email": "",
   "aesthetic": {
-    "title": "小而可爱的书桌",
-    "note": "奶油白、棉花粉、粉蓝、黄油色和一点抹茶绿，适合长文阅读，也保留一点软乎乎的个性。",
+    "title": "Geoffrey 的研究书房",
+    "note": "欧式复古、羊皮纸、深木书架、古典音乐与长期主义研究秩序。",
+    "hero": "resources/uploads/vintage-library-hero.png",
     "poster": "resources/uploads/pastel-desk.png",
     "palette": [
       { "name": "奶油白", "color": "#fffaf0" },

@@ -1,0 +1,50 @@
+{
+  "stages": [
+    {
+      "title": "文献阅读",
+      "icon": "book-open",
+      "description": "阅读文献、记录脉络、建立笔记"
+    },
+    {
+      "title": "数据处理",
+      "icon": "database",
+      "description": "数据清洗、变量生成、探索分析"
+    },
+    {
+      "title": "模型推导",
+      "icon": "sigma",
+      "description": "识别假设、理论推导、公式证明"
+    },
+    {
+      "title": "实证分析",
+      "icon": "scatter-chart",
+      "description": "回归、稳健性、机制检验"
+    },
+    {
+      "title": "写作版本",
+      "icon": "pen-line",
+      "description": "初稿、修改、回复审稿意见"
+    },
+    {
+      "title": "结果归档",
+      "icon": "archive",
+      "description": "代码、图表、数据与 PDF 备份"
+    }
+  ],
+  "projects": [
+    {
+      "title": "资产定价中的非线性信息与市场波动",
+      "date": "2026-06-03",
+      "status": "进行中",
+      "type": "实证研究",
+      "url": "#/blog?category=研究札记"
+    },
+    {
+      "title": "机器学习在因果推断中的应用综述",
+      "date": "2026-05-18",
+      "status": "文献综述",
+      "type": "论文草稿",
+      "url": "#/blog?tag=研究"
+    }
+  ]
+}

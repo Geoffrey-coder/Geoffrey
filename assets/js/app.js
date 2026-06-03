@@ -6,6 +6,7 @@
   const siteTitle = document.getElementById("site-title");
 
   const themes = [
+    { id: "atelier", name: "古典书房", swatch: "swatch-atelier" },
     { id: "petit", name: "软萌粉蓝", swatch: "swatch-petit" },
     { id: "paper", name: "浅色阅读", swatch: "swatch-paper" },
     { id: "blush", name: "粉色时尚", swatch: "swatch-blush" },
@@ -14,9 +15,12 @@
     { id: "midnight", name: "深色夜读", swatch: "swatch-midnight" }
   ];
 
+  const savedThemeVersion = localStorage.getItem("blog-theme-version");
+  const savedTheme = localStorage.getItem("blog-theme");
+
   const state = {
     site: null,
-    theme: localStorage.getItem("blog-theme") || "petit"
+    theme: savedThemeVersion === "vintage-library-v1" && savedTheme ? savedTheme : "atelier"
   };
 
   const studio = {
@@ -60,10 +64,11 @@
   }
 
   function applyTheme(themeId) {
-    const nextTheme = themes.some((theme) => theme.id === themeId) ? themeId : "petit";
+    const nextTheme = themes.some((theme) => theme.id === themeId) ? themeId : "atelier";
     state.theme = nextTheme;
     document.body.dataset.theme = nextTheme;
     localStorage.setItem("blog-theme", nextTheme);
+    localStorage.setItem("blog-theme-version", "vintage-library-v1");
   }
 
   function refreshIcons() {
@@ -81,17 +86,21 @@
   }
 
   function setActiveNav(path) {
-    const root = path.startsWith("/post/")
-      ? "/blog"
-      : path.startsWith("/diary")
-        ? "/diary"
-        : path.startsWith("/resources")
-          ? "/resources"
-          : path.startsWith("/plans")
-            ? "/plans"
-            : path.startsWith("/search")
-              ? ""
-              : "/";
+    const root = path.startsWith("/courses") || path.startsWith("/blog") || path.startsWith("/post/")
+      ? "/courses"
+      : path.startsWith("/workflow") || path.startsWith("/resources")
+        ? "/workflow"
+        : path.startsWith("/friends")
+          ? "/friends"
+          : path.startsWith("/ideas")
+            ? "/ideas"
+            : path.startsWith("/plans")
+              ? "/plans"
+              : path.startsWith("/about") || path.startsWith("/diary")
+                ? "/about"
+                : path.startsWith("/search")
+                  ? ""
+                  : "/";
 
     document.querySelectorAll("[data-nav]").forEach((link) => {
       link.classList.toggle("is-active", link.dataset.nav === root);
@@ -295,36 +304,193 @@
     `;
   }
 
+  function renderLibraryMetric(iconName, label, value) {
+    return `
+      <div class="library-metric">
+        ${icon(iconName)}
+        <span>${escapeHtml(label)}</span>
+        <strong>${escapeHtml(value)}</strong>
+      </div>
+    `;
+  }
+
+  function renderCourseCard(course) {
+    const progress = Math.max(0, Math.min(100, Number(course.progress || 0)));
+    return `
+      <a class="course-card" href="${escapeHtml(course.url || "#/courses")}">
+        <div class="course-icon">${icon(course.icon || "book-open")}</div>
+        <h3>${escapeHtml(course.title)}</h3>
+        <p>${escapeHtml(course.subtitle || "")}</p>
+        <div class="mini-progress" aria-label="整理进度 ${progress}%">
+          <span style="width:${progress}%"></span>
+        </div>
+        <small>进入笔记馆</small>
+      </a>
+    `;
+  }
+
+  function renderWorkflowStage(stage, index) {
+    return `
+      <div class="workflow-stage">
+        <div class="workflow-node">${icon(stage.icon || "circle")}</div>
+        <strong>${escapeHtml(stage.title)}</strong>
+        <span>${escapeHtml(stage.description || "")}</span>
+        ${index < (state.site.workflows?.stages || []).length - 1 ? '<i class="workflow-line" aria-hidden="true"></i>' : ""}
+      </div>
+    `;
+  }
+
+  function renderFriendTiles(limit = 3) {
+    const friends = (state.site.friends || []).slice(0, limit);
+    if (!friends.length) return '<div class="empty-state">暂无友链</div>';
+    return friends
+      .map(
+        (friend) => `
+          <a class="library-friend" href="${escapeHtml(friend.url)}" target="_blank" rel="noopener noreferrer">
+            <img src="${escapeHtml(friend.avatar || "")}" alt="${escapeHtml(friend.title)}" />
+            <span>
+              <strong>${escapeHtml(friend.title)}</strong>
+              <small>${escapeHtml(friend.subtitle || "")}</small>
+            </span>
+          </a>
+        `
+      )
+      .join("");
+  }
+
   function renderHome() {
-    const recentPosts = state.site.recentPosts || [];
-    const aesthetic = state.site.profile?.aesthetic || {};
+    const profile = state.site.profile || {};
+    const courses = state.site.courses || [];
+    const workflows = state.site.workflows || { stages: [], projects: [] };
+    const plans = state.site.plans || [];
+    const heroImage = profile.aesthetic?.hero || profile.aesthetic?.poster || "resources/uploads/vintage-library-hero.png";
+    const totalNotes = (state.site.posts || []).length + (state.site.diary || []).length + courses.length;
+
     app.innerHTML = `
-      <div class="home-grid">
-        ${renderProfileColumn()}
-        <section class="home-main">
-          ${
-            aesthetic.poster
-              ? `<section class="soft-banner">
-                  <div>
-                    <span class="banner-kicker">soft reading desk</span>
-                    <h2>${escapeHtml(aesthetic.title || "小而可爱的书桌")}</h2>
-                    <p>${escapeHtml(aesthetic.note || "")}</p>
-                  </div>
-                  <img src="${escapeHtml(aesthetic.poster)}" alt="${escapeHtml(aesthetic.title || "柔和书桌插画")}" />
-                </section>`
-              : ""
-          }
-          <div class="section-head">
+      <div class="library-page">
+        <aside class="library-left">
+          <section class="portrait-panel">
+            <img class="portrait-avatar" src="${escapeHtml(profile.avatar || "")}" alt="${escapeHtml(profile.nickname || "Geoffrey")}" />
             <div>
-              <h2>近期文章</h2>
-              <p>博客文章会显示在这里，日记默认留在日记页。</p>
+              <p class="script-kicker">Ad meliora, semper.</p>
+              <h1>${escapeHtml(profile.nickname || "Geoffrey")}</h1>
+              <p>${escapeHtml(profile.bio || "")}</p>
             </div>
-            <a class="chip" href="#/blog">全部博客</a>
-          </div>
-          <div class="article-grid">
-            ${recentPosts.length ? recentPosts.map(renderArticleCard).join("") : '<div class="empty-state">暂无文章</div>'}
-          </div>
+          </section>
+
+          <section class="music-panel">
+            <div class="vinyl-mark">${icon("music-2")}</div>
+            <div>
+              <span>正在聆听</span>
+              <strong>Piano Sonata No.14</strong>
+              <small>Beethoven · Moonlight</small>
+            </div>
+            <div class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          </section>
+
+          <section class="quote-panel">
+            <p>音乐是流动的建筑，建筑是凝固的音乐。</p>
+            <span>约翰 · 沃尔夫冈 · 冯 · 歌德</span>
+          </section>
+        </aside>
+
+        <section class="library-main">
+          <section class="library-hero" style="--hero-image:url('${escapeHtml(heroImage)}')">
+            <div class="hero-copy">
+              <span class="script-kicker">Bibliotheca Geoffrey</span>
+              <h2>Geoffrey 的研究书房</h2>
+              <p>阅读、研究、音乐与长期思考。把课程笔记、论文流程、计划和灵感收进一座有秩序的私人图书馆。</p>
+              <div class="library-metrics">
+                ${renderLibraryMetric("scroll-text", "笔记条目", String(totalNotes))}
+                ${renderLibraryMetric("file-stack", "研究项目", String((workflows.projects || []).length))}
+                ${renderLibraryMetric("book-open", "课程档案", String(courses.length))}
+                ${renderLibraryMetric("lightbulb", "灵感保险柜", "本地加密")}
+              </div>
+            </div>
+          </section>
+
+          <section class="library-section courses-section">
+            <div class="ornate-heading">
+              <div>
+                <h2>${icon("book-marked")}课程笔记</h2>
+                <p>每门课独立归档，适合沉淀定理、证明、公式和例题。</p>
+              </div>
+              <a href="#/courses">查看全部</a>
+            </div>
+            <div class="course-grid">${courses.slice(0, 6).map(renderCourseCard).join("")}</div>
+          </section>
+
+          <section class="library-section workflow-section">
+            <div class="ornate-heading">
+              <div>
+                <h2>${icon("workflow")}论文与科研项目工作流</h2>
+                <p>从文献到归档，把科研过程做成可复用的系统。</p>
+              </div>
+              <a href="#/workflow">进入工作流</a>
+            </div>
+            <div class="workflow-ribbon">${(workflows.stages || []).map(renderWorkflowStage).join("")}</div>
+            <div class="project-ledger">
+              ${(workflows.projects || [])
+                .slice(0, 2)
+                .map(
+                  (project) => `
+                    <a href="${escapeHtml(project.url || "#/workflow")}">
+                      <span>${escapeHtml(project.date || "")}</span>
+                      <strong>${escapeHtml(project.title)}</strong>
+                      <em>${escapeHtml(project.type || "")}</em>
+                      <small>${escapeHtml(project.status || "")}</small>
+                    </a>
+                  `
+                )
+                .join("")}
+            </div>
+          </section>
         </section>
+
+        <aside class="library-right">
+          <section class="vault-card">
+            <div class="lock-emblem">${icon("lock-keyhole")}</div>
+            <div>
+              <h2>私密灵感 / Idea Vault</h2>
+              <p>科研想法、未完成构思和草稿只保存在本机浏览器，并用密码加密。</p>
+              <a class="seal-button" href="#/ideas">${icon("key-round")}打开灵感保险柜</a>
+            </div>
+          </section>
+
+          <section class="library-section compact">
+            <div class="ornate-heading">
+              <div>
+                <h2>${icon("link")}友链</h2>
+                <p>学术路上的同伴。</p>
+              </div>
+              <a href="#/friends">全部</a>
+            </div>
+            <div class="library-friends">${renderFriendTiles(3)}</div>
+          </section>
+
+          <section class="library-section compact">
+            <div class="ornate-heading">
+              <div>
+                <h2>${icon("calendar-check")}计划</h2>
+                <p>让长期主义有节拍。</p>
+              </div>
+              <a href="#/plans">查看</a>
+            </div>
+            <div class="plan-scroll">
+              ${plans
+                .slice(0, 3)
+                .map(
+                  (plan) => `
+                    <article>
+                      <strong>${escapeHtml(plan.title)}</strong>
+                      <span>${escapeHtml(plan.status || "")} · ${Number(plan.progress || 0)}%</span>
+                    </article>
+                  `
+                )
+                .join("")}
+            </div>
+          </section>
+        </aside>
       </div>
     `;
   }
@@ -624,6 +790,212 @@
             : '<div class="empty-state">输入内容后开始搜索</div>'
         }
       </div>
+    `;
+  }
+
+  function renderCourses() {
+    const courses = state.site.courses || [];
+    app.innerHTML = `
+      ${pageHeading("课程笔记", "每门课都有自己的档案柜：定理、证明、例题、代码和复盘都可以慢慢归档。")}
+      <section class="library-section full-width">
+        <div class="course-grid large">
+          ${courses.length ? courses.map(renderCourseCard).join("") : '<div class="empty-state">暂无课程笔记目录</div>'}
+        </div>
+      </section>
+      <section class="library-section full-width">
+        <div class="ornate-heading">
+          <div>
+            <h2>${icon("scroll-text")}最近笔记</h2>
+            <p>从文章系统中自动读取最近整理的内容。</p>
+          </div>
+          <a href="#/blog">全部文章</a>
+        </div>
+        <div class="article-grid">
+          ${(state.site.recentPosts || []).slice(0, 4).map(renderArticleCard).join("") || '<div class="empty-state">暂无文章</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderWorkflow() {
+    const workflows = state.site.workflows || { stages: [], projects: [] };
+    app.innerHTML = `
+      ${pageHeading("论文与科研项目工作流", "把科研从灵感、文献、数据、模型、实证、写作到归档做成可重复的路径。")}
+      <section class="library-section full-width">
+        <div class="workflow-ribbon large">${(workflows.stages || []).map(renderWorkflowStage).join("")}</div>
+      </section>
+      <section class="library-section full-width">
+        <div class="ornate-heading">
+          <div>
+            <h2>${icon("clipboard-list")}项目台账</h2>
+            <p>近期论文、科研项目和版本状态。</p>
+          </div>
+          <a href="#/resources">资源库</a>
+        </div>
+        <div class="project-ledger expanded">
+          ${(workflows.projects || [])
+            .map(
+              (project) => `
+                <a href="${escapeHtml(project.url || "#/workflow")}">
+                  <span>${escapeHtml(project.date || "")}</span>
+                  <strong>${escapeHtml(project.title)}</strong>
+                  <em>${escapeHtml(project.type || "")}</em>
+                  <small>${escapeHtml(project.status || "")}</small>
+                </a>
+              `
+            )
+            .join("") || '<div class="empty-state">暂无科研项目</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderFriendsPage() {
+    const friends = state.site.friends || [];
+    app.innerHTML = `
+      ${pageHeading("友链", "学术路上的同伴、工具和长期参考入口。")}
+      <section class="library-section full-width">
+        <div class="library-friends grid">
+          ${friends.length ? renderFriendTiles(friends.length) : '<div class="empty-state">暂无友链</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderAbout() {
+    const profile = state.site.profile || {};
+    app.innerHTML = `
+      ${pageHeading("关于", "这座书房用于长期保存阅读、研究、音乐与思考。")}
+      <section class="about-scroll">
+        <div class="about-seal">${escapeHtml((profile.nickname || "G").slice(0, 1))}</div>
+        <h2>${escapeHtml(profile.siteTitle || "Geoffrey 的研究书房")}</h2>
+        <p>${escapeHtml(profile.bio || "")}</p>
+        <p>站点采用静态 GitHub Pages 部署，内容以 Markdown 和 JSON 维护。公开内容进入仓库，私密灵感只保存在浏览器本地加密库中。</p>
+        <div class="button-row">
+          <a class="secondary-button" href="#/courses">${icon("book-open")}课程笔记</a>
+          <a class="secondary-button" href="#/workflow">${icon("workflow")}科研工作流</a>
+          <a class="secondary-button" href="#/ideas">${icon("lock-keyhole")}私密灵感</a>
+        </div>
+      </section>
+    `;
+  }
+
+  const vaultState = {
+    unlocked: false,
+    password: "",
+    ideas: []
+  };
+
+  function vaultBytesToBase64(bytes) {
+    return btoa(String.fromCharCode(...bytes));
+  }
+
+  function vaultBase64ToBytes(value) {
+    return Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
+  }
+
+  async function vaultKey(password, salt) {
+    const baseKey = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(password),
+      "PBKDF2",
+      false,
+      ["deriveKey"]
+    );
+    return crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt, iterations: 120000, hash: "SHA-256" },
+      baseKey,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  async function vaultSave() {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await vaultKey(vaultState.password, salt);
+    const payload = new TextEncoder().encode(JSON.stringify(vaultState.ideas));
+    const cipher = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, payload));
+    localStorage.setItem(
+      "geoffrey-idea-vault",
+      JSON.stringify({
+        salt: vaultBytesToBase64(salt),
+        iv: vaultBytesToBase64(iv),
+        cipher: vaultBytesToBase64(cipher)
+      })
+    );
+  }
+
+  async function vaultLoad(password) {
+    const raw = localStorage.getItem("geoffrey-idea-vault");
+    if (!raw) {
+      vaultState.password = password;
+      vaultState.ideas = [];
+      vaultState.unlocked = true;
+      await vaultSave();
+      return;
+    }
+    const record = JSON.parse(raw);
+    const salt = vaultBase64ToBytes(record.salt);
+    const iv = vaultBase64ToBytes(record.iv);
+    const cipher = vaultBase64ToBytes(record.cipher);
+    const key = await vaultKey(password, salt);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, cipher);
+    vaultState.password = password;
+    vaultState.ideas = JSON.parse(new TextDecoder().decode(plain));
+    vaultState.unlocked = true;
+  }
+
+  function renderIdeasVault() {
+    const exists = !!localStorage.getItem("geoffrey-idea-vault");
+    if (!vaultState.unlocked) {
+      app.innerHTML = `
+        ${pageHeading("私密灵感 / Idea Vault", "科研想法不会进入 GitHub 仓库；这里只用浏览器本地加密保存。")}
+        <section class="vault-page">
+          <div class="lock-emblem large">${icon("lock-keyhole")}</div>
+          <h2>${exists ? "解锁灵感保险柜" : "创建灵感保险柜"}</h2>
+          <p>请输入密码。密码不会上传，也不会保存；如果忘记密码，已加密内容无法恢复。</p>
+          <form id="vault-unlock-form" class="vault-form">
+            <input class="studio-input" id="vault-password" type="password" placeholder="输入本地保险柜密码" required />
+            <button class="primary-button" type="submit">${icon("key-round")}${exists ? "解锁" : "创建并进入"}</button>
+          </form>
+          <div class="status-line" id="vault-status"></div>
+        </section>
+      `;
+      return;
+    }
+
+    app.innerHTML = `
+      ${pageHeading("私密灵感 / Idea Vault", "本地加密草稿箱。适合存放未公开 idea、研究假说和突然出现的直觉。")}
+      <section class="vault-workbench">
+        <form id="vault-idea-form" class="vault-editor">
+          <input class="studio-input" id="vault-title" placeholder="灵感标题" required />
+          <textarea class="studio-textarea" id="vault-body" placeholder="写下研究想法、变量、识别策略、数据来源或下一步..." required></textarea>
+          <div class="button-row">
+            <button class="primary-button" type="submit">${icon("save")}加密保存</button>
+            <button class="secondary-button" type="button" id="vault-lock-button">${icon("lock")}锁定</button>
+          </div>
+        </form>
+        <div class="idea-list">
+          ${
+            vaultState.ideas.length
+              ? vaultState.ideas
+                  .map(
+                    (idea, index) => `
+                      <article class="idea-card">
+                        <span>${escapeHtml(formatDate(idea.date))}</span>
+                        <h3>${escapeHtml(idea.title)}</h3>
+                        <p>${escapeHtml(idea.body)}</p>
+                        <button class="icon-button" type="button" data-delete-idea="${index}" title="删除">${icon("trash-2")}</button>
+                      </article>
+                    `
+                  )
+                  .join("")
+              : '<div class="empty-state">保险柜里还没有灵感</div>'
+          }
+        </div>
+      </section>
     `;
   }
 
@@ -1083,6 +1455,54 @@
       });
     }
 
+    const vaultUnlockForm = document.getElementById("vault-unlock-form");
+    if (vaultUnlockForm) {
+      vaultUnlockForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const password = document.getElementById("vault-password").value;
+        const status = document.getElementById("vault-status");
+        if (status) status.textContent = "正在解锁...";
+        try {
+          await vaultLoad(password);
+          renderRoute();
+        } catch {
+          if (status) status.textContent = "密码不正确，或本地保险柜数据已损坏。";
+        }
+      });
+    }
+
+    const vaultIdeaForm = document.getElementById("vault-idea-form");
+    if (vaultIdeaForm) {
+      vaultIdeaForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const title = document.getElementById("vault-title").value.trim();
+        const body = document.getElementById("vault-body").value.trim();
+        if (!title || !body) return;
+        vaultState.ideas.unshift({ title, body, date: today() });
+        await vaultSave();
+        renderRoute();
+      });
+    }
+
+    app.querySelectorAll("[data-delete-idea]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const index = Number(button.dataset.deleteIdea);
+        vaultState.ideas.splice(index, 1);
+        await vaultSave();
+        renderRoute();
+      });
+    });
+
+    const vaultLockButton = document.getElementById("vault-lock-button");
+    if (vaultLockButton) {
+      vaultLockButton.addEventListener("click", () => {
+        vaultState.unlocked = false;
+        vaultState.password = "";
+        vaultState.ideas = [];
+        renderRoute();
+      });
+    }
+
     app.querySelectorAll("[data-scroll-heading]").forEach((link) => {
       link.addEventListener("click", (event) => {
         event.preventDefault();
@@ -1180,6 +1600,11 @@
     document.title = state.site.profile?.siteTitle || "个人博客";
 
     if (route.path === "/") renderHome();
+    else if (route.path === "/courses") renderCourses();
+    else if (route.path === "/workflow") renderWorkflow();
+    else if (route.path === "/friends") renderFriendsPage();
+    else if (route.path === "/ideas") renderIdeasVault();
+    else if (route.path === "/about") renderAbout();
     else if (route.path === "/blog") renderCollection("post", route);
     else if (route.path === "/diary") renderCollection("diary", route);
     else if (route.path.startsWith("/post/")) renderArticle("post", decodeURIComponent(route.path.slice("/post/".length)));
