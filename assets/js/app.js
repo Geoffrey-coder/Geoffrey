@@ -45,6 +45,15 @@
     { id: "latex", label: "LaTeX 论文工程", icon: "file-text" },
     { id: "final", label: "投稿终版", icon: "send" }
   ];
+  const maintenanceFiles = [
+    { file: "profile.json", label: "主页资料" },
+    { file: "courses.json", label: "课程笔记目录" },
+    { file: "resources.json", label: "资源库" },
+    { file: "friends.json", label: "友链" },
+    { file: "plans.json", label: "计划" },
+    { file: "research.json", label: "研究与论文" },
+    { file: "workflows.json", label: "科研工作流" }
+  ];
 
   function today() {
     return new Date().toISOString().slice(0, 10);
@@ -103,15 +112,17 @@
         ? "/workflow"
         : path.startsWith("/friends")
           ? "/friends"
-          : path.startsWith("/ideas")
-            ? "/ideas"
-            : path.startsWith("/plans")
-              ? "/plans"
-              : path.startsWith("/about") || path.startsWith("/diary")
-                ? "/about"
-                : path.startsWith("/search")
-                  ? ""
-                  : "/";
+          : path.startsWith("/guestbook")
+            ? "/guestbook"
+            : path.startsWith("/ideas")
+              ? "/ideas"
+              : path.startsWith("/plans")
+                ? "/plans"
+                : path.startsWith("/about") || path.startsWith("/diary")
+                  ? "/about"
+                  : path.startsWith("/search")
+                    ? ""
+                    : "/";
 
     document.querySelectorAll("[data-nav]").forEach((link) => {
       link.classList.toggle("is-active", link.dataset.nav === root);
@@ -963,7 +974,142 @@
           ${friends.length ? renderFriendTiles(friends.length) : '<div class="empty-state">暂无友链</div>'}
         </div>
       </section>
+      <section class="library-section full-width guestbook-teaser">
+        <div>
+          <span class="script-kicker">Salon des Amis</span>
+          <h2>留言室</h2>
+          <p>朋友来访可以在公开区留下足迹；更私人的话题，走私信入口，不写入公开仓库。</p>
+        </div>
+        <a class="primary-button" href="#/guestbook">${icon("message-circle")}进入留言室</a>
+      </section>
     `;
+  }
+
+  function guestbookSettings() {
+    const profile = state.site.profile || {};
+    const github = profile.github || {};
+    const guestbook = profile.guestbook || {};
+    const fallbackRepo = github.owner && github.repo ? `${github.owner}/${github.repo}` : "";
+    return {
+      publicRepo: guestbook.publicRepo || fallbackRepo,
+      issueTerm: guestbook.issueTerm || "pathname",
+      label: guestbook.label || "guestbook",
+      privateEmail: guestbook.privateEmail || profile.email || ""
+    };
+  }
+
+  function renderPrivateMessageBox(settings) {
+    if (!settings.privateEmail) {
+      return `
+        <div class="private-message-placeholder">
+          ${icon("mail-question")}
+          <h3>私信入口待配置</h3>
+          <p>在 <code>data/profile.json</code> 的 <code>guestbook.privateEmail</code> 填入你的接收邮箱后，这里会变成私密留言表单。</p>
+        </div>
+      `;
+    }
+
+    return `
+      <form class="guestbook-private-form" id="private-message-form">
+        <div class="field">
+          <label for="private-name">你的称呼</label>
+          <input class="studio-input" id="private-name" placeholder="昵称或姓名" />
+        </div>
+        <div class="field">
+          <label for="private-contact">回信方式</label>
+          <input class="studio-input" id="private-contact" placeholder="邮箱、GitHub 或其他联系方式" />
+        </div>
+        <div class="field wide">
+          <label for="private-message">想说的话</label>
+          <textarea class="guestbook-textarea" id="private-message" placeholder="这段内容不会写入公开仓库，会通过邮件客户端发送给站长。" required></textarea>
+        </div>
+        <div class="button-row wide">
+          <button class="primary-button" type="submit">${icon("send")}发送私信</button>
+          <span class="status-line" id="private-message-status"></span>
+        </div>
+      </form>
+    `;
+  }
+
+  function renderGuestbookPage() {
+    const settings = guestbookSettings();
+    app.innerHTML = `
+      ${pageHeading("留言室", "公开交流与私密联系分开保存，访客只能留言，不能改动站点资料。")}
+      <section class="guestbook-shell">
+        <article class="guestbook-hero-card">
+          <span class="script-kicker">Guest Salon</span>
+          <h2>朋友来访，先在这里落座。</h2>
+          <p>公开区适合问候、交流、建议和长期可见的讨论；私密区适合联系方式、简历相关、合作细节或不希望公开展示的内容。</p>
+        </article>
+
+        <div class="guestbook-permission-grid">
+          <article>
+            ${icon("eye")}
+            <h3>访客</h3>
+            <p>可以浏览公开内容，在公开区评论，或通过私信入口联系你；不能修改主页、课程、资源或研究档案。</p>
+          </article>
+          <article>
+            ${icon("key-round")}
+            <h3>站长</h3>
+            <p>通过隐藏写作台和 GitHub Token 维护 Markdown、资料 JSON 与上传文件；Token 只保存在当前浏览器会话。</p>
+          </article>
+        </div>
+
+        <section class="guestbook-card">
+          <div class="guestbook-card-head">
+            <div>
+              <span class="script-kicker">Public Notes</span>
+              <h2>公开区</h2>
+            </div>
+            <span class="guestbook-badge">所有人可见</span>
+          </div>
+          <p>公开留言使用 GitHub Issues 评论体系。访客需要登录 GitHub，只能发表评论，不能写入你的站点文件。</p>
+          ${
+            settings.publicRepo
+              ? `<div class="guestbook-thread" id="guestbook-public-thread" aria-live="polite">
+                  <div class="loading-panel compact">
+                    <div class="loading-mark"></div>
+                    <p>正在载入公开留言区</p>
+                  </div>
+                </div>`
+              : '<div class="empty-state">公开留言区还没有配置 GitHub 仓库。</div>'
+          }
+        </section>
+
+        <section class="guestbook-card private">
+          <div class="guestbook-card-head">
+            <div>
+              <span class="script-kicker">Private Letter</span>
+              <h2>私密区</h2>
+            </div>
+            <span class="guestbook-badge private">不进入公开仓库</span>
+          </div>
+          ${renderPrivateMessageBox(settings)}
+        </section>
+      </section>
+    `;
+  }
+
+  function utterancesTheme() {
+    return state.theme === "atelier" || state.theme === "midnight" ? "github-dark-orange" : "github-light";
+  }
+
+  function mountUtterances() {
+    const container = document.getElementById("guestbook-public-thread");
+    if (!container || container.dataset.mounted === "true") return;
+    const settings = guestbookSettings();
+    if (!settings.publicRepo) return;
+    container.dataset.mounted = "true";
+    container.innerHTML = "";
+    const script = document.createElement("script");
+    script.src = "https://utteranc.es/client.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.setAttribute("repo", settings.publicRepo);
+    script.setAttribute("issue-term", settings.issueTerm);
+    script.setAttribute("label", settings.label);
+    script.setAttribute("theme", utterancesTheme());
+    container.appendChild(script);
   }
 
   function renderAbout() {
@@ -1443,6 +1589,66 @@
     ].join("");
   }
 
+  function maintenanceData(file) {
+    const map = {
+      "profile.json": state.site.profile || {},
+      "courses.json": state.site.courses || [],
+      "resources.json": state.site.resources || [],
+      "friends.json": state.site.friends || [],
+      "plans.json": state.site.plans || [],
+      "research.json": state.site.research || { directions: [], publicWorks: [] },
+      "workflows.json": state.site.workflows || { stages: [], projects: [] }
+    };
+    return map[file] ?? {};
+  }
+
+  function renderMaintenanceFileOptions() {
+    return maintenanceFiles
+      .map((item) => `<option value="${escapeHtml(item.file)}">${escapeHtml(item.label)} · ${escapeHtml(item.file)}</option>`)
+      .join("");
+  }
+
+  function renderMaintenanceTools() {
+    const initialFile = maintenanceFiles[0].file;
+    return `
+      <section class="studio-maintenance">
+        <div class="guestbook-card-head">
+          <div>
+            <span class="script-kicker">Owner Console</span>
+            <h2>站点资料维护</h2>
+          </div>
+          <span class="guestbook-badge private">仅 Token 会话可保存</span>
+        </div>
+        <p>这里用于更新主页资料、课程目录、友链、资源库和计划。访客看不到保存能力，也没有仓库写入权限。</p>
+        <div class="maintenance-grid">
+          <form class="maintenance-editor" id="maintenance-form">
+            <div class="field">
+              <label for="maintenance-file">资料文件</label>
+              <select class="studio-select" id="maintenance-file">${renderMaintenanceFileOptions()}</select>
+            </div>
+            <div class="field wide">
+              <label for="maintenance-json">JSON 内容</label>
+              <textarea class="studio-textarea compact" id="maintenance-json" spellcheck="false">${escapeHtml(JSON.stringify(maintenanceData(initialFile), null, 2))}</textarea>
+            </div>
+            <div class="button-row wide">
+              <button class="secondary-button" type="button" id="maintenance-reset">${icon("refresh-cw")}重载当前数据</button>
+              <button class="primary-button" type="submit">${icon("save")}保存资料文件</button>
+              <span class="status-line" id="maintenance-status"></span>
+            </div>
+          </form>
+          <div class="maintenance-upload">
+            <div class="course-icon">${icon("upload")}</div>
+            <h3>上传资料</h3>
+            <p>图片、PDF、数据文件会上传到 <code>resources/uploads/</code>，完成后复制返回的路径填入资源库或文章。</p>
+            <input class="studio-input" id="maintenance-upload-file" type="file" multiple />
+            <button class="secondary-button" type="button" id="maintenance-upload-button">${icon("file-up")}上传所选文件</button>
+            <div class="upload-result" id="maintenance-upload-result"></div>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
   function renderStudioWorkspace() {
     return `
       ${pageHeading("写作台", "Markdown 编辑与预览")}
@@ -1501,6 +1707,7 @@
             <div class="studio-preview markdown-body" id="studio-preview"></div>
           </div>
         </div>
+        ${renderMaintenanceTools()}
       </section>
     `;
   }
@@ -1702,16 +1909,20 @@
     await putContent(path, utf8ToBase64(markdown), `Save ${path}`);
   }
 
-  async function uploadImage(file) {
+  async function uploadAsset(file) {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
-    const safeName = safeSlug(file.name.replace(/\.[^.]+$/, "")) || "image";
+    const safeName = safeSlug(file.name.replace(/\.[^.]+$/, "")) || "asset";
     const ext = (file.name.match(/\.[^.]+$/)?.[0] || ".png").toLowerCase();
     const repoPath = `resources/uploads/${year}/${month}/${Date.now()}-${safeName}${ext}`;
     const content = await fileToBase64(file);
     await putContent(repoPath, content, `Upload ${repoPath}`);
     return repoPath;
+  }
+
+  async function uploadImage(file) {
+    return uploadAsset(file);
   }
 
   function insertAtCursor(textarea, text) {
@@ -2047,6 +2258,92 @@
       });
     }
 
+    const privateMessageForm = document.getElementById("private-message-form");
+    if (privateMessageForm) {
+      privateMessageForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const settings = guestbookSettings();
+        const name = document.getElementById("private-name")?.value.trim() || "访客";
+        const contact = document.getElementById("private-contact")?.value.trim() || "未填写";
+        const message = document.getElementById("private-message")?.value.trim() || "";
+        const status = document.getElementById("private-message-status");
+        if (!settings.privateEmail) {
+          if (status) status.textContent = "私信邮箱还没有配置。";
+          return;
+        }
+        if (!message) {
+          if (status) status.textContent = "请先写一点内容。";
+          return;
+        }
+        const subject = encodeURIComponent(`来自 Geoffrey 书房的私密留言 - ${name}`);
+        const body = encodeURIComponent(`称呼：${name}\n回信方式：${contact}\n\n留言：\n${message}`);
+        window.location.href = `mailto:${settings.privateEmail}?subject=${subject}&body=${body}`;
+        if (status) status.textContent = "已打开邮件客户端。";
+      });
+    }
+
+    const maintenanceFile = document.getElementById("maintenance-file");
+    const maintenanceJson = document.getElementById("maintenance-json");
+    const maintenanceStatus = document.getElementById("maintenance-status");
+    const loadMaintenanceJson = () => {
+      if (!maintenanceFile || !maintenanceJson) return;
+      maintenanceJson.value = JSON.stringify(maintenanceData(maintenanceFile.value), null, 2);
+    };
+
+    if (maintenanceFile) maintenanceFile.addEventListener("change", loadMaintenanceJson);
+
+    const maintenanceReset = document.getElementById("maintenance-reset");
+    if (maintenanceReset) maintenanceReset.addEventListener("click", loadMaintenanceJson);
+
+    const maintenanceForm = document.getElementById("maintenance-form");
+    if (maintenanceForm) {
+      maintenanceForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!maintenanceFile || !maintenanceJson) return;
+        if (maintenanceStatus) maintenanceStatus.textContent = "正在保存资料文件...";
+        try {
+          const parsed = JSON.parse(maintenanceJson.value);
+          const repoPath = `data/${maintenanceFile.value}`;
+          await putContent(repoPath, utf8ToBase64(`${JSON.stringify(parsed, null, 2)}\n`), `Save ${repoPath}`);
+          if (maintenanceFile.value === "profile.json") state.site.profile = parsed;
+          if (maintenanceFile.value === "courses.json") state.site.courses = parsed;
+          if (maintenanceFile.value === "resources.json") state.site.resources = parsed;
+          if (maintenanceFile.value === "friends.json") state.site.friends = parsed;
+          if (maintenanceFile.value === "plans.json") state.site.plans = parsed;
+          if (maintenanceFile.value === "research.json") state.site.research = parsed;
+          if (maintenanceFile.value === "workflows.json") state.site.workflows = parsed;
+          if (maintenanceStatus) maintenanceStatus.textContent = "已保存，GitHub Actions 会自动部署。";
+        } catch (error) {
+          if (maintenanceStatus) maintenanceStatus.textContent = `保存失败：${error.message}`;
+        }
+      });
+    }
+
+    const maintenanceUploadButton = document.getElementById("maintenance-upload-button");
+    if (maintenanceUploadButton) {
+      maintenanceUploadButton.addEventListener("click", async () => {
+        const fileInput = document.getElementById("maintenance-upload-file");
+        const result = document.getElementById("maintenance-upload-result");
+        const files = [...(fileInput?.files || [])];
+        if (!files.length) {
+          if (result) result.textContent = "请先选择文件。";
+          return;
+        }
+        if (result) result.textContent = "正在上传...";
+        try {
+          const paths = [];
+          for (const file of files) paths.push(await uploadAsset(file));
+          if (result) {
+            result.innerHTML = paths
+              .map((path) => `<code>${escapeHtml(path)}</code>`)
+              .join("");
+          }
+        } catch (error) {
+          if (result) result.textContent = `上传失败：${error.message}`;
+        }
+      });
+    }
+
     if (route.path.startsWith("/search")) {
       const query = route.params.get("q") || "";
       searchInput.value = query;
@@ -2068,6 +2365,7 @@
     else if (route.path === "/workflow") renderWorkflow();
     else if (route.path.startsWith("/research/")) renderResearchDirection(decodeURIComponent(route.path.slice("/research/".length)));
     else if (route.path === "/friends") renderFriendsPage();
+    else if (route.path === "/guestbook") renderGuestbookPage();
     else if (route.path === "/ideas") renderIdeasVault();
     else if (route.path === "/about") renderAbout();
     else if (route.path === "/blog") renderCollection("post", route);
@@ -2082,6 +2380,7 @@
 
     bindEvents(route);
     refreshIcons();
+    if (route.path === "/guestbook") mountUtterances();
     app.focus({ preventScroll: true });
     window.scrollTo({ top: 0, behavior: "auto" });
   }

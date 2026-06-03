@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-03T07:34:24.651Z",
+  "generatedAt": "2026-06-03T10:36:03.144Z",
   "profile": {
     "siteTitle": "Geoffrey 的研究书房",
     "nickname": "Geoffrey",
@@ -61,6 +61,12 @@
       "owner": "Geoffrey-coder",
       "repo": "Geoffrey",
       "branch": "main"
+    },
+    "guestbook": {
+      "publicRepo": "Geoffrey-coder/Geoffrey",
+      "issueTerm": "pathname",
+      "label": "guestbook",
+      "privateEmail": ""
     }
   },
   "friends": [
@@ -488,5 +494,5 @@
       "count": 1
     }
   ],
-  "contentHash": "8162ac430ea0"
+  "contentHash": "d107628368c9"
 }

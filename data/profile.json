@@ -41,5 +41,11 @@
     "owner": "Geoffrey-coder",
     "repo": "Geoffrey",
     "branch": "main"
+  },
+  "guestbook": {
+    "publicRepo": "Geoffrey-coder/Geoffrey",
+    "issueTerm": "pathname",
+    "label": "guestbook",
+    "privateEmail": ""
   }
 }
