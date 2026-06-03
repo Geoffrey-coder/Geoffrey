@@ -2992,6 +2992,13 @@ body.is-room-page[data-theme="atelier"] .ornate-heading h2 {
   background: rgba(255, 249, 235, 0.58);
 }
 
+.guestbook-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
 .guestbook-private-form,
 .maintenance-editor {
   display: grid;
@@ -3070,6 +3077,52 @@ body.is-room-page[data-theme="atelier"] .ornate-heading h2 {
   color: #6a4525;
   white-space: normal;
   overflow-wrap: anywhere;
+}
+
+.guestbook-admin-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.guestbook-admin-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid rgba(151, 106, 55, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 249, 235, 0.66);
+}
+
+.guestbook-admin-entry span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.guestbook-admin-entry h3 {
+  margin: 2px 0 6px;
+  font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+}
+
+.guestbook-admin-entry p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.secondary-button.danger {
+  border-color: rgba(139, 47, 34, 0.34);
+  color: #8b2f22;
+}
+
+.secondary-button.danger:hover {
+  background: rgba(139, 47, 34, 0.08);
+}
+
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
 }
 
 .loading-panel.compact {
@@ -3677,6 +3730,10 @@ body.is-room-page[data-theme="atelier"] .ornate-heading h2 {
 
   .guestbook-private-form,
   .maintenance-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .guestbook-admin-entry {
     grid-template-columns: 1fr;
   }
 

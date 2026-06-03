@@ -44,7 +44,7 @@
   },
   "guestbook": {
     "publicRepo": "Geoffrey-coder/Geoffrey",
-    "issueTerm": "pathname",
+    "issueTerm": "url",
     "label": "guestbook",
     "privateEmail": ""
   }

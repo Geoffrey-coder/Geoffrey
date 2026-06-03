@@ -998,6 +998,26 @@
     };
   }
 
+  function githubRepoUrl(path = "") {
+    const settings = guestbookSettings();
+    if (!settings.publicRepo) return "#";
+    return `https://github.com/${settings.publicRepo}${path}`;
+  }
+
+  function githubIssueSearchUrl() {
+    const settings = guestbookSettings();
+    const query = encodeURIComponent(`is:issue label:${settings.label || "guestbook"}`);
+    return githubRepoUrl(`/issues?q=${query}`);
+  }
+
+  function githubNewGuestbookIssueUrl() {
+    const settings = guestbookSettings();
+    const labels = encodeURIComponent(settings.label || "guestbook");
+    const title = encodeURIComponent("Guestbook 留言");
+    const body = encodeURIComponent("你好 Geoffrey，\n\n我想说：\n\n");
+    return githubRepoUrl(`/issues/new?labels=${labels}&title=${title}&body=${body}`);
+  }
+
   function renderPrivateMessageBox(settings) {
     if (!settings.privateEmail) {
       return `
@@ -1064,6 +1084,11 @@
             <span class="guestbook-badge">所有人可见</span>
           </div>
           <p>公开留言使用 GitHub Issues 评论体系。访客需要登录 GitHub，只能发表评论，不能写入你的站点文件。</p>
+          <div class="guestbook-action-row">
+            <a class="primary-button" href="${escapeHtml(githubNewGuestbookIssueUrl())}" target="_blank" rel="noopener noreferrer">${icon("message-square-plus")}在 GitHub 留言</a>
+            <a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装评论组件</a>
+            <a class="secondary-button" href="${escapeHtml(githubIssueSearchUrl())}" target="_blank" rel="noopener noreferrer">${icon("shield-check")}管理 / 删除留言</a>
+          </div>
           ${
             settings.publicRepo
               ? `<div class="guestbook-thread" id="guestbook-public-thread" aria-live="polite">
@@ -1649,6 +1674,29 @@
     `;
   }
 
+  function renderGuestbookAdminTools() {
+    const settings = guestbookSettings();
+    return `
+      <section class="studio-maintenance guestbook-admin-panel">
+        <div class="guestbook-card-head">
+          <div>
+            <span class="script-kicker">Guestbook Steward</span>
+            <h2>留言管理</h2>
+          </div>
+          <span class="guestbook-badge private">站长权限</span>
+        </div>
+        <p>公开留言保存在 GitHub Issues。你可以在这里载入评论并删除不合适的留言；Issue 标题、关闭和更细的审核可在 GitHub 页面处理。</p>
+        <div class="button-row">
+          <button class="primary-button" type="button" id="guestbook-admin-load">${icon("messages-square")}载入公开留言</button>
+          <a class="secondary-button" href="${escapeHtml(githubIssueSearchUrl())}" target="_blank" rel="noopener noreferrer">${icon("external-link")}打开 GitHub 管理页</a>
+          <a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装评论组件</a>
+        </div>
+        <div class="status-line" id="guestbook-admin-status">${settings.publicRepo ? `仓库：${escapeHtml(settings.publicRepo)}` : "公开留言仓库未配置"}</div>
+        <div class="guestbook-admin-list" id="guestbook-admin-list"></div>
+      </section>
+    `;
+  }
+
   function renderStudioWorkspace() {
     return `
       ${pageHeading("写作台", "Markdown 编辑与预览")}
@@ -1708,6 +1756,7 @@
           </div>
         </div>
         ${renderMaintenanceTools()}
+        ${renderGuestbookAdminTools()}
       </section>
     `;
   }
@@ -1856,7 +1905,10 @@
       throw error;
     }
 
-    return response.json();
+    if (response.status === 204) return null;
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) return response.json();
+    return response.text();
   }
 
   async function getContentSha(repoPath) {
@@ -1887,6 +1939,95 @@
       method: "PUT",
       body: JSON.stringify(body)
     });
+  }
+
+  function guestbookEntryExcerpt(value) {
+    const text = String(value || "")
+      .replace(/```[\s\S]*?```/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return text.length > 220 ? `${text.slice(0, 220)}...` : text;
+  }
+
+  async function loadGuestbookEntries() {
+    const settings = guestbookSettings();
+    const label = encodeURIComponent(settings.label || "guestbook");
+    const issues = await githubRequest(`/issues?state=all&labels=${label}&per_page=40`);
+    const entries = [];
+
+    for (const issue of issues.filter((item) => !item.pull_request)) {
+      entries.push({
+        type: "issue",
+        id: `issue-${issue.number}`,
+        issueNumber: issue.number,
+        title: issue.title,
+        user: issue.user?.login || "unknown",
+        body: issue.body || "",
+        createdAt: issue.created_at,
+        url: issue.html_url,
+        state: issue.state
+      });
+
+      const comments = await githubRequest(`/issues/${issue.number}/comments?per_page=100`);
+      comments.forEach((comment) => {
+        entries.push({
+          type: "comment",
+          id: `comment-${comment.id}`,
+          commentId: comment.id,
+          issueNumber: issue.number,
+          title: issue.title,
+          user: comment.user?.login || "unknown",
+          body: comment.body || "",
+          createdAt: comment.created_at,
+          url: comment.html_url,
+          state: issue.state
+        });
+      });
+    }
+
+    return entries;
+  }
+
+  function renderGuestbookAdminEntries(entries) {
+    const list = document.getElementById("guestbook-admin-list");
+    if (!list) return;
+    if (!entries.length) {
+      list.innerHTML = '<div class="empty-state">还没有找到公开留言。</div>';
+      return;
+    }
+    list.innerHTML = entries
+      .map(
+        (entry) => `
+          <article class="guestbook-admin-entry">
+            <div>
+              <span>${escapeHtml(entry.type === "comment" ? "评论" : "Issue")} · #${escapeHtml(entry.issueNumber)} · ${escapeHtml(entry.user)} · ${formatDate(entry.createdAt)}</span>
+              <h3>${escapeHtml(entry.title || "Guestbook")}</h3>
+              <p>${escapeHtml(guestbookEntryExcerpt(entry.body) || "无内容")}</p>
+            </div>
+            <div class="button-row">
+              <a class="secondary-button compact-button" href="${escapeHtml(entry.url)}" target="_blank" rel="noopener noreferrer">${icon("external-link")}查看</a>
+              ${
+                entry.type === "comment"
+                  ? `<button class="secondary-button compact-button danger" type="button" data-delete-guestbook-comment="${escapeHtml(entry.commentId)}">${icon("trash-2")}删除评论</button>`
+                  : `<button class="secondary-button compact-button danger" type="button" data-close-guestbook-issue="${escapeHtml(entry.issueNumber)}" ${entry.state === "closed" ? "disabled" : ""}>${icon("archive")}关闭 Issue</button>`
+              }
+            </div>
+          </article>
+        `
+      )
+      .join("");
+    refreshIcons();
+  }
+
+  async function closeGuestbookIssue(issueNumber) {
+    return githubRequest(`/issues/${issueNumber}`, {
+      method: "PATCH",
+      body: JSON.stringify({ state: "closed", state_reason: "completed" })
+    });
+  }
+
+  async function deleteGuestbookComment(commentId) {
+    return githubRequest(`/issues/comments/${commentId}`, { method: "DELETE" });
   }
 
   function setStudioStatus(message) {
@@ -2340,6 +2481,57 @@
           }
         } catch (error) {
           if (result) result.textContent = `上传失败：${error.message}`;
+        }
+      });
+    }
+
+    const guestbookAdminLoad = document.getElementById("guestbook-admin-load");
+    if (guestbookAdminLoad) {
+      guestbookAdminLoad.addEventListener("click", async () => {
+        const status = document.getElementById("guestbook-admin-status");
+        const list = document.getElementById("guestbook-admin-list");
+        if (!studioSession().token) {
+          if (status) status.textContent = "先进入写作台填写 GitHub Token。";
+          return;
+        }
+        if (status) status.textContent = "正在载入公开留言...";
+        if (list) list.innerHTML = '<div class="empty-state">正在读取 GitHub Issues...</div>';
+        try {
+          const entries = await loadGuestbookEntries();
+          renderGuestbookAdminEntries(entries);
+          if (status) status.textContent = `已载入 ${entries.length} 条记录。`;
+        } catch (error) {
+          if (status) status.textContent = `载入失败：${error.message}`;
+        }
+      });
+    }
+
+    const guestbookAdminList = document.getElementById("guestbook-admin-list");
+    if (guestbookAdminList) {
+      guestbookAdminList.addEventListener("click", async (event) => {
+        const deleteButton = event.target.closest("[data-delete-guestbook-comment]");
+        const closeButton = event.target.closest("[data-close-guestbook-issue]");
+        if (!deleteButton && !closeButton) return;
+        const status = document.getElementById("guestbook-admin-status");
+        if (!studioSession().token) {
+          if (status) status.textContent = "先进入写作台填写 GitHub Token。";
+          return;
+        }
+        const confirmed = window.confirm(deleteButton ? "确定删除这条评论吗？" : "确定关闭这个留言 Issue 吗？");
+        if (!confirmed) return;
+        try {
+          if (deleteButton) {
+            if (status) status.textContent = "正在删除评论...";
+            await deleteGuestbookComment(deleteButton.dataset.deleteGuestbookComment);
+          } else {
+            if (status) status.textContent = "正在关闭 Issue...";
+            await closeGuestbookIssue(closeButton.dataset.closeGuestbookIssue);
+          }
+          const entries = await loadGuestbookEntries();
+          renderGuestbookAdminEntries(entries);
+          if (status) status.textContent = "已处理。";
+        } catch (error) {
+          if (status) status.textContent = `处理失败：${error.message}`;
         }
       });
     }
