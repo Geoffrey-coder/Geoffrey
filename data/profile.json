@@ -47,6 +47,6 @@
     "issueTerm": "url",
     "label": "guestbook",
     "privateEmail": "",
-    "embed": false
+    "embed": true
   }
 }

@@ -2983,6 +2983,17 @@ body.is-room-page[data-theme="atelier"] .ornate-heading h2 {
   color: #8b2f22;
 }
 
+.guestbook-badge.success {
+  gap: 7px;
+  border-color: rgba(74, 124, 68, 0.28);
+  color: #35633a;
+}
+
+.guestbook-badge.success svg {
+  width: 16px;
+  height: 16px;
+}
+
 .guestbook-thread {
   min-height: 320px;
   margin-top: 14px;
@@ -3101,6 +3112,21 @@ body.is-room-page[data-theme="atelier"] .ornate-heading h2 {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 14px;
+}
+
+.guestbook-mini-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.guestbook-mini-actions a {
+  color: #7b4c24;
+  font-weight: 700;
 }
 
 .guestbook-private-form,

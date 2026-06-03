@@ -1088,9 +1088,17 @@
           <div class="guestbook-action-row">
             <a class="primary-button" href="${escapeHtml(githubNewGuestbookIssueUrl())}" target="_blank" rel="noopener noreferrer">${icon("message-square-plus")}在 GitHub 留言</a>
             <button class="secondary-button" type="button" id="guestbook-public-refresh">${icon("refresh-cw")}刷新留言</button>
+            <button class="secondary-button" type="button" id="guestbook-copy-link">${icon("link")}复制留言页</button>
             <a class="secondary-button" href="${escapeHtml(githubIssueSearchUrl())}" target="_blank" rel="noopener noreferrer">${icon("shield-check")}管理 / 删除留言</a>
-            <a class="secondary-button" href="${escapeHtml(githubRepoUrl("/settings"))}" target="_blank" rel="noopener noreferrer">${icon("settings")}开启 Issues</a>
-            <a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装网页评论组件</a>
+            ${
+              settings.embed
+                ? `<span class="guestbook-badge success">${icon("check-circle")}网页评论已启用</span>`
+                : `<a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装网页评论组件</a>`
+            }
+          </div>
+          <div class="guestbook-mini-actions">
+            <a href="${escapeHtml(githubRepoUrl("/settings"))}" target="_blank" rel="noopener noreferrer">仓库设置</a>
+            <span>留言删除遵循 GitHub 权限：站长可管理全部留言，访客可处理自己的留言。</span>
           </div>
           ${
             settings.publicRepo
@@ -1710,7 +1718,11 @@
           <button class="primary-button" type="button" id="guestbook-admin-load">${icon("messages-square")}载入公开留言</button>
           <a class="secondary-button" href="${escapeHtml(githubIssueSearchUrl())}" target="_blank" rel="noopener noreferrer">${icon("external-link")}打开 GitHub 管理页</a>
           <a class="secondary-button" href="${escapeHtml(githubRepoUrl("/settings"))}" target="_blank" rel="noopener noreferrer">${icon("settings")}仓库设置</a>
-          <a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装评论组件</a>
+          ${
+            settings.embed
+              ? `<span class="guestbook-badge success">${icon("check-circle")}评论组件已启用</span>`
+              : `<a class="secondary-button" href="https://github.com/apps/utterances/installations/new" target="_blank" rel="noopener noreferrer">${icon("plug")}安装评论组件</a>`
+          }
         </div>
         <div class="status-line" id="guestbook-admin-status">${settings.publicRepo ? `仓库：${escapeHtml(settings.publicRepo)}` : "公开留言仓库未配置"}</div>
         <div class="guestbook-admin-list" id="guestbook-admin-list"></div>
@@ -2554,6 +2566,24 @@
     if (guestbookPublicRefresh) {
       guestbookPublicRefresh.addEventListener("click", () => {
         mountGuestbookPublicFeed();
+      });
+    }
+
+    const guestbookCopyLink = document.getElementById("guestbook-copy-link");
+    if (guestbookCopyLink) {
+      guestbookCopyLink.addEventListener("click", async () => {
+        const url = `${location.origin}${location.pathname}${location.search}#/guestbook`;
+        try {
+          await navigator.clipboard.writeText(url);
+          guestbookCopyLink.innerHTML = `${icon("check")}已复制`;
+          refreshIcons();
+          window.setTimeout(() => {
+            guestbookCopyLink.innerHTML = `${icon("link")}复制留言页`;
+            refreshIcons();
+          }, 1600);
+        } catch {
+          window.prompt("复制留言页链接", url);
+        }
       });
     }
 
