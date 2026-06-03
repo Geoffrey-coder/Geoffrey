@@ -1775,12 +1775,21 @@
         if (reducedMotion) return;
         event.preventDefault();
         const href = link.getAttribute("href");
+        const kind = link.dataset.roomKind || "panel";
+        const durations = {
+          desk: 860,
+          drawer: 820,
+          cabinet: 840,
+          piano: 700,
+          table: 760,
+          portrait: 650
+        };
         const scene = document.getElementById("room-scene");
         scene?.classList.add("is-transitioning");
         link.classList.add("is-opening");
         window.setTimeout(() => {
           location.hash = href.replace(/^#/, "");
-        }, 430);
+        }, durations[kind] || 700);
       });
     });
 
@@ -2061,6 +2070,9 @@
     setActiveNav(route.path);
     document.title = state.site.profile?.siteTitle || "个人博客";
     app.classList.toggle("is-room-home", route.path === "/");
+    app.classList.toggle("is-room-page", route.path !== "/");
+    document.body.classList.toggle("is-room-home", route.path === "/");
+    document.body.classList.toggle("is-room-page", route.path !== "/");
 
     if (route.path === "/") renderHome();
     else if (route.path === "/courses") renderCourses();

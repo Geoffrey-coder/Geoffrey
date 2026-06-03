@@ -1328,6 +1328,79 @@ body[data-theme="atelier"] .top-search input::placeholder {
   color: #a98f68;
 }
 
+body.is-room-page[data-theme="atelier"] {
+  background:
+    linear-gradient(180deg, rgba(20, 11, 6, 0.88), rgba(62, 41, 22, 0.84)),
+    url("../../resources/uploads/classical-room-scene.png") center / cover fixed no-repeat;
+}
+
+body.is-room-page[data-theme="atelier"]::before {
+  background: url("../../resources/uploads/classical-room-scene.png") center / cover fixed no-repeat;
+  opacity: 0.18;
+  filter: blur(22px) saturate(0.82);
+}
+
+body.is-room-page[data-theme="atelier"] .app-shell {
+  width: min(1320px, calc(100% - 44px));
+  padding: 22px;
+  border: 1px solid rgba(214, 173, 98, 0.34);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 222, 148, 0.12), transparent 34%),
+    linear-gradient(135deg, rgba(38, 22, 12, 0.62), rgba(18, 10, 5, 0.5));
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 1px rgba(255, 232, 178, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+body.is-room-page[data-theme="atelier"] .page-heading,
+body.is-room-page[data-theme="atelier"] .library-section,
+body.is-room-page[data-theme="atelier"] .reader-article,
+body.is-room-page[data-theme="atelier"] .studio-panel,
+body.is-room-page[data-theme="atelier"] .vault-page,
+body.is-room-page[data-theme="atelier"] .vault-workbench,
+body.is-room-page[data-theme="atelier"] .about-scroll,
+body.is-room-page[data-theme="atelier"] .research-hero-card,
+body.is-room-page[data-theme="atelier"] .research-direction-card,
+body.is-room-page[data-theme="atelier"] .public-work-card,
+body.is-room-page[data-theme="atelier"] .archive-sidebar,
+body.is-room-page[data-theme="atelier"] .archive-main,
+body.is-room-page[data-theme="atelier"] .archive-project-card,
+body.is-room-page[data-theme="atelier"] .archive-section-card,
+body.is-room-page[data-theme="atelier"] .article-card,
+body.is-room-page[data-theme="atelier"] .resource-card,
+body.is-room-page[data-theme="atelier"] .plan-card {
+  border-color: rgba(214, 173, 98, 0.42);
+  background:
+    radial-gradient(circle at 90% 8%, rgba(255, 218, 140, 0.16), transparent 28%),
+    linear-gradient(135deg, rgba(255, 250, 235, 0.94), rgba(229, 209, 168, 0.9));
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+body.is-room-page[data-theme="atelier"] .workflow-stage,
+body.is-room-page[data-theme="atelier"] .project-ledger a,
+body.is-room-page[data-theme="atelier"] .archive-nav-item,
+body.is-room-page[data-theme="atelier"] .archive-entry,
+body.is-room-page[data-theme="atelier"] .course-card {
+  border-color: rgba(151, 106, 55, 0.3);
+  background:
+    radial-gradient(circle at 82% 12%, rgba(214, 173, 98, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(255, 248, 226, 0.86), rgba(226, 205, 166, 0.82));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.26),
+    0 10px 24px rgba(62, 38, 19, 0.12);
+}
+
+body.is-room-page[data-theme="atelier"] .page-heading {
+  color: #2b2119;
+}
+
+body.is-room-page[data-theme="atelier"] .page-heading h1,
+body.is-room-page[data-theme="atelier"] .ornate-heading h2 {
+  text-shadow: 0 1px 0 rgba(255, 250, 229, 0.66);
+}
+
 .app-shell.is-room-home {
   width: min(1720px, calc(100% - 24px));
   margin-top: 14px;
@@ -1443,19 +1516,16 @@ body[data-theme="atelier"] .top-search input::placeholder {
   top: 2.8%;
   left: 50%;
   min-width: min(560px, 48vw);
-  padding: 16px 36px 14px;
+  padding: 12px 36px 14px;
   transform: translateX(-50%);
-  border: 1px solid rgba(214, 173, 98, 0.5);
-  border-radius: 10px;
+  border: 0;
+  border-radius: 0;
   background:
-    linear-gradient(135deg, rgba(43, 24, 12, 0.88), rgba(20, 11, 6, 0.78)),
-    rgba(33, 19, 11, 0.82);
+    radial-gradient(ellipse at 50% 42%, rgba(18, 9, 4, 0.7), rgba(18, 9, 4, 0.36) 44%, transparent 72%);
   color: #f4dcae;
   text-align: center;
-  box-shadow:
-    0 18px 42px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 1px rgba(255, 230, 175, 0.1);
-  backdrop-filter: blur(8px);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .room-title-plaque h1 {
@@ -1464,6 +1534,9 @@ body[data-theme="atelier"] .top-search input::placeholder {
   font-size: clamp(2rem, 4vw, 3.6rem);
   line-height: 1.08;
   letter-spacing: 0;
+  text-shadow:
+    0 0 14px rgba(255, 214, 138, 0.36),
+    0 4px 20px rgba(0, 0, 0, 0.82);
 }
 
 .room-title-plaque p {
@@ -1484,11 +1557,14 @@ body[data-theme="atelier"] .top-search input::placeholder {
   align-items: center;
   min-width: 220px;
   padding: 10px 14px;
-  border: 1px solid rgba(214, 173, 98, 0.42);
+  border: 1px solid transparent;
   border-radius: 999px;
-  background: rgba(20, 11, 6, 0.62);
+  background:
+    radial-gradient(ellipse at 34% 50%, rgba(255, 213, 128, 0.14), transparent 62%),
+    radial-gradient(ellipse at 66% 50%, rgba(18, 9, 4, 0.42), transparent 72%);
   color: #f1d5a2;
-  backdrop-filter: blur(10px);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .room-brand-card img {
@@ -1541,10 +1617,12 @@ body[data-theme="atelier"] .top-search input::placeholder {
 }
 
 .room-object-glow {
-  inset: 12%;
-  border-radius: 16px;
-  background: radial-gradient(circle, rgba(255, 197, 92, 0.32), transparent 70%);
-  filter: blur(16px);
+  inset: 8%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 221, 146, 0.38), transparent 48%),
+    radial-gradient(ellipse at 50% 88%, rgba(255, 184, 86, 0.22), transparent 66%);
+  filter: blur(18px);
   opacity: 0;
   transition: opacity 240ms ease, transform 240ms ease;
 }
@@ -1564,32 +1642,62 @@ body[data-theme="atelier"] .top-search input::placeholder {
   transition: opacity 220ms ease, transform 340ms cubic-bezier(.2,.8,.2,1);
 }
 
-.room-hotspot.is-drawer .room-drawer-face,
-.room-hotspot.is-desk .room-drawer-face {
-  opacity: 0.36;
+.room-hotspot:hover.is-drawer .room-drawer-face,
+.room-hotspot:focus-visible.is-drawer .room-drawer-face {
+  opacity: 0.32;
 }
 
 .room-plaque {
   position: relative;
   z-index: 2;
-  min-width: 168px;
-  max-width: min(250px, 100%);
+  width: max-content;
+  min-width: 0;
+  max-width: min(230px, 100%);
   display: grid;
   justify-items: center;
   gap: 4px;
-  padding: 12px 18px;
-  border: 1px solid rgba(214, 173, 98, 0.54);
-  border-radius: 8px;
+  padding: 6px 10px 9px;
+  border: 0;
+  border-radius: 0;
   background:
-    linear-gradient(135deg, rgba(38, 22, 12, 0.88), rgba(20, 11, 6, 0.76));
-  color: #f2d69f;
+    radial-gradient(ellipse at 50% 54%, rgba(18, 8, 3, 0.34), transparent 70%),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 207, 106, 0.2), transparent 72%);
+  color: #ffe3a8;
   text-align: center;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-  box-shadow:
-    0 14px 32px rgba(0, 0, 0, 0.32),
-    inset 0 0 0 1px rgba(255, 235, 180, 0.08);
-  backdrop-filter: blur(8px);
-  transition: transform 260ms cubic-bezier(.2,.8,.2,1), border-color 220ms ease, background 220ms ease, box-shadow 220ms ease;
+  text-shadow:
+    0 0 8px rgba(255, 213, 128, 0.54),
+    0 3px 14px rgba(0, 0, 0, 0.82);
+  box-shadow: none;
+  backdrop-filter: none;
+  opacity: 0.94;
+  transition: transform 300ms cubic-bezier(.2,.8,.2,1), filter 220ms ease, opacity 220ms ease;
+}
+
+.room-plaque::before {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 2px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 218, 138, 0.78), transparent);
+  box-shadow: 0 0 14px rgba(255, 210, 116, 0.5);
+  opacity: 0.72;
+}
+
+.room-plaque::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -34px;
+  width: 86px;
+  height: 42px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255, 217, 133, 0.22), transparent);
+  clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+  opacity: 0.18;
+  filter: blur(2px);
+  pointer-events: none;
 }
 
 .room-plaque svg {
@@ -1605,7 +1713,7 @@ body[data-theme="atelier"] .top-search input::placeholder {
 
 .room-plaque strong {
   font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
-  font-size: 1.06rem;
+  font-size: 1.08rem;
 }
 
 .room-plaque small {
@@ -1627,22 +1735,175 @@ body[data-theme="atelier"] .top-search input::placeholder {
 
 .room-hotspot:hover .room-plaque,
 .room-hotspot:focus-visible .room-plaque {
-  border-color: rgba(255, 219, 146, 0.88);
-  background: linear-gradient(135deg, rgba(56, 31, 15, 0.94), rgba(23, 12, 6, 0.84));
-  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.42), 0 0 26px rgba(214, 173, 98, 0.28);
-  transform: translateY(-8px) scale(1.03);
+  filter: drop-shadow(0 0 18px rgba(255, 205, 102, 0.56));
+  transform: translateY(-7px) scale(1.04);
+  opacity: 1;
+}
+
+.room-hotspot:hover .room-plaque::after,
+.room-hotspot:focus-visible .room-plaque::after,
+.room-hotspot.is-opening .room-plaque::after {
+  opacity: 0.5;
 }
 
 .room-hotspot.is-opening .room-plaque {
-  transform: translateY(-14px) scale(1.07);
-  border-color: #ffd889;
-  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.52), 0 0 42px rgba(255, 192, 86, 0.52);
+  transform: translateY(-15px) scale(1.08);
+  filter: drop-shadow(0 0 28px rgba(255, 199, 88, 0.82));
 }
 
-.room-hotspot.is-opening.is-drawer .room-drawer-face,
-.room-hotspot.is-opening.is-desk .room-drawer-face {
+.room-hotspot.is-opening.is-drawer .room-drawer-face {
   opacity: 0.92;
   transform: translateY(34px) rotateX(-14deg) scaleX(1.06);
+}
+
+.room-hotspot.is-desk::before,
+.room-hotspot.is-desk::after,
+.room-hotspot.is-cabinet::before,
+.room-hotspot.is-cabinet::after,
+.room-hotspot.is-piano::before,
+.room-hotspot.is-table::before,
+.room-hotspot.is-portrait::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.room-hotspot.is-desk::before,
+.room-hotspot.is-desk::after {
+  left: 30%;
+  top: 28%;
+  width: 36%;
+  height: 42%;
+  border: 1px solid rgba(255, 221, 153, 0.42);
+  border-radius: 5px;
+  background:
+    linear-gradient(90deg, rgba(255, 242, 205, 0.35), rgba(178, 132, 77, 0.14)),
+    repeating-linear-gradient(0deg, rgba(88, 55, 28, 0.18) 0 1px, transparent 1px 11px);
+  opacity: 0;
+  transform-origin: left center;
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.18);
+}
+
+.room-hotspot.is-desk::after {
+  transform-origin: right center;
+}
+
+.room-hotspot.is-opening.is-desk::before {
+  animation: bookLeftPage 860ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.room-hotspot.is-opening.is-desk::after {
+  animation: bookRightPage 860ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes bookLeftPage {
+  0% { opacity: 0; transform: perspective(400px) rotateY(0deg) translateX(0); }
+  18% { opacity: 0.9; }
+  100% { opacity: 0.95; transform: perspective(400px) rotateY(-55deg) translateX(-18px); }
+}
+
+@keyframes bookRightPage {
+  0% { opacity: 0; transform: perspective(400px) rotateY(0deg) translateX(0); }
+  18% { opacity: 0.9; }
+  100% { opacity: 0.95; transform: perspective(400px) rotateY(55deg) translateX(18px); }
+}
+
+.room-hotspot.is-cabinet::before,
+.room-hotspot.is-cabinet::after {
+  top: 20%;
+  width: 24%;
+  height: 58%;
+  border: 1px solid rgba(255, 216, 132, 0.34);
+  background: linear-gradient(120deg, rgba(92, 48, 20, 0.46), rgba(20, 10, 4, 0.18));
+  opacity: 0.24;
+  transform-origin: center left;
+}
+
+.room-hotspot.is-cabinet::before {
+  left: 25%;
+  transform-origin: left center;
+}
+
+.room-hotspot.is-cabinet::after {
+  right: 25%;
+  transform-origin: right center;
+}
+
+.room-hotspot.is-opening.is-cabinet::before {
+  animation: cabinetLeftDoor 840ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.room-hotspot.is-opening.is-cabinet::after {
+  animation: cabinetRightDoor 840ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes cabinetLeftDoor {
+  to { opacity: 0.82; transform: perspective(500px) rotateY(-46deg); }
+}
+
+@keyframes cabinetRightDoor {
+  to { opacity: 0.82; transform: perspective(500px) rotateY(46deg); }
+}
+
+.room-hotspot.is-piano::before {
+  left: 18%;
+  right: 8%;
+  bottom: 26%;
+  height: 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 232, 175, 0.72), transparent);
+  opacity: 0;
+  filter: blur(3px);
+}
+
+.room-hotspot.is-opening.is-piano::before {
+  animation: pianoGliss 700ms ease-out both;
+}
+
+@keyframes pianoGliss {
+  0% { opacity: 0; transform: translateX(-36px) scaleX(0.2); }
+  45% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(72px) scaleX(1.08); }
+}
+
+.room-hotspot.is-table::before {
+  left: 34%;
+  top: 22%;
+  width: 40%;
+  height: 52%;
+  border: 1px solid rgba(255, 226, 164, 0.44);
+  border-radius: 8px 8px 5px 5px;
+  background:
+    linear-gradient(135deg, rgba(255, 244, 213, 0.42), rgba(209, 164, 92, 0.16)),
+    repeating-linear-gradient(0deg, rgba(92, 62, 34, 0.16) 0 1px, transparent 1px 13px);
+  opacity: 0;
+  transform: rotate(-5deg);
+}
+
+.room-hotspot.is-opening.is-table::before {
+  animation: paperRise 760ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes paperRise {
+  0% { opacity: 0; transform: translateY(16px) rotate(-8deg) scale(0.9); }
+  100% { opacity: 0.94; transform: translateY(-22px) rotate(3deg) scale(1.04); }
+}
+
+.room-hotspot.is-portrait::before {
+  inset: 16%;
+  border: 1px solid rgba(255, 221, 150, 0.46);
+  border-radius: 12px;
+  opacity: 0;
+  box-shadow: inset 0 0 22px rgba(255, 206, 108, 0.24), 0 0 28px rgba(255, 206, 108, 0.24);
+}
+
+.room-hotspot.is-opening.is-portrait::before {
+  animation: portraitWake 650ms ease-out both;
+}
+
+@keyframes portraitWake {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1.06); }
 }
 
 .room-hotspot.is-opening.is-cabinet .room-plaque {
@@ -1668,10 +1929,13 @@ body[data-theme="atelier"] .top-search input::placeholder {
 .room-status-card .library-metric {
   min-height: 62px;
   padding: 8px;
-  background: rgba(28, 15, 8, 0.58);
-  border-color: rgba(214, 173, 98, 0.38);
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(255, 209, 112, 0.2), transparent 64%);
+  border-color: transparent;
   color: #f1d5a2;
-  backdrop-filter: blur(10px);
+  box-shadow: none;
+  backdrop-filter: none;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.72);
 }
 
 .room-status-card .library-metric span {
@@ -1691,12 +1955,14 @@ body[data-theme="atelier"] .top-search input::placeholder {
   gap: 12px;
   align-items: center;
   padding: 14px;
-  border: 1px solid rgba(214, 173, 98, 0.42);
+  border: 1px solid transparent;
   border-radius: 8px;
-  background: rgba(18, 10, 6, 0.68);
+  background:
+    radial-gradient(ellipse at 18% 50%, rgba(255, 219, 146, 0.13), transparent 42%),
+    radial-gradient(ellipse at 54% 48%, rgba(18, 8, 3, 0.56), transparent 76%);
   color: #f1d5a2;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(10px);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .room-music-card span,
@@ -1721,12 +1987,15 @@ body[data-theme="atelier"] .top-search input::placeholder {
   margin: 0;
   padding: 14px 26px;
   transform: translateX(-50%);
-  border: 1px solid rgba(214, 173, 98, 0.38);
+  border: 1px solid transparent;
   border-radius: 8px;
-  background: rgba(18, 10, 6, 0.52);
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(18, 8, 3, 0.52), transparent 72%),
+    radial-gradient(ellipse at 50% 96%, rgba(255, 207, 106, 0.16), transparent 74%);
   color: #f1d5a2;
   text-align: center;
-  backdrop-filter: blur(10px);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .room-quote p {
@@ -3293,7 +3562,9 @@ body[data-theme="atelier"] .top-search input::placeholder {
     min-width: 0;
     height: 100%;
     align-content: center;
-    background: rgba(28, 15, 8, 0.72);
+    background:
+      radial-gradient(ellipse at 50% 52%, rgba(28, 15, 8, 0.54), transparent 76%),
+      radial-gradient(ellipse at 50% 100%, rgba(255, 207, 106, 0.16), transparent 72%);
   }
 
   .room-hotspot:hover .room-plaque,
