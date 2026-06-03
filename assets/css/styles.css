@@ -2207,6 +2207,370 @@ body[data-theme="atelier"] .top-search input::placeholder {
   font-size: 0.84rem;
 }
 
+.research-showcase {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.35fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.research-hero-card,
+.research-direction-card,
+.public-work-card,
+.archive-sidebar,
+.archive-main,
+.archive-project-card,
+.archive-section-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(184, 138, 66, 0.48);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(214, 173, 98, 0.18), transparent 30%),
+    linear-gradient(135deg, rgba(255, 251, 239, 0.9), rgba(236, 220, 190, 0.92));
+  box-shadow: var(--shadow);
+}
+
+.research-hero-card::before,
+.research-direction-card::before,
+.public-work-card::before,
+.archive-sidebar::before,
+.archive-main::before,
+.archive-project-card::before,
+.archive-section-card::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(120, 83, 45, 0.22);
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.research-hero-card {
+  min-height: 300px;
+  display: grid;
+  align-content: center;
+  padding: 34px;
+}
+
+.research-hero-card h2 {
+  margin: 8px 0 12px;
+  font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  line-height: 1.16;
+}
+
+.research-hero-card p {
+  color: var(--muted);
+}
+
+.research-direction-grid,
+.public-work-grid,
+.archive-project-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.research-direction-card,
+.public-work-card {
+  display: grid;
+  gap: 8px;
+  padding: 20px;
+  color: var(--text);
+  transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
+}
+
+.research-direction-card:hover,
+.public-work-card:hover {
+  transform: translateY(-4px);
+  border-color: #b88a42;
+  box-shadow: 0 18px 34px rgba(73, 45, 24, 0.18);
+  text-decoration: none;
+}
+
+.research-direction-card .course-icon {
+  margin-bottom: 4px;
+}
+
+.research-direction-card span,
+.public-work-card p,
+.archive-project-card p {
+  color: var(--muted);
+}
+
+.research-direction-card h3,
+.public-work-card h3,
+.archive-project-card h3,
+.archive-main-head h2,
+.archive-project-head h3,
+.research-direction-intro h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+}
+
+.research-direction-card small {
+  color: #7b4c24;
+  font-weight: 700;
+}
+
+.public-work-card .button-row {
+  margin-top: 4px;
+}
+
+.compact-button {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 0.86rem;
+}
+
+.research-direction-detail {
+  display: grid;
+  gap: 18px;
+}
+
+.research-direction-intro {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.archive-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.8fr);
+  gap: 18px;
+}
+
+.archive-sidebar,
+.archive-main {
+  padding: 22px;
+}
+
+.compact-heading {
+  align-items: start;
+}
+
+.archive-nav-list,
+.archive-entry-list {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+}
+
+.archive-nav-button,
+.archive-project-card {
+  width: 100%;
+  border: 1px solid rgba(151, 106, 55, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 249, 235, 0.72);
+  color: var(--text);
+  text-align: left;
+  transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease), background var(--ease);
+}
+
+.archive-nav-button {
+  padding: 12px;
+}
+
+.archive-nav-button strong,
+.archive-nav-button span {
+  display: block;
+}
+
+.archive-nav-button span {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.archive-nav-button.is-active,
+.archive-project-card.is-active {
+  border-color: #a56e2f;
+  background: rgba(255, 252, 243, 0.94);
+  box-shadow: inset 4px 0 0 rgba(139, 94, 46, 0.52), 0 12px 24px rgba(72, 44, 22, 0.12);
+}
+
+.archive-mini-form,
+.archive-inline-form,
+.archive-entry-form {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.sync-panel {
+  position: relative;
+  z-index: 1;
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px solid rgba(151, 106, 55, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 249, 235, 0.58);
+}
+
+.sync-panel strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+}
+
+.sync-panel p,
+.muted-line {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.archive-main-head,
+.archive-project-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.archive-main-head p,
+.archive-project-head p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.archive-project-card {
+  min-height: 138px;
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+}
+
+.archive-project-card span,
+.archive-project-card small {
+  color: #7b4c24;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.archive-workbench {
+  position: relative;
+  z-index: 1;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(151, 106, 55, 0.24);
+}
+
+.archive-entry-form {
+  grid-template-columns: minmax(150px, 0.5fr) minmax(200px, 0.7fr) minmax(280px, 1.4fr) auto;
+  align-items: stretch;
+}
+
+.archive-entry-form .studio-textarea {
+  min-height: 46px;
+}
+
+.archive-section-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.public-archive-grid .archive-section-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.public-archive-grid {
+  grid-template-columns: 1fr;
+}
+
+.public-archive-grid .archive-project-card {
+  min-height: auto;
+  cursor: default;
+}
+
+.archive-section-card {
+  min-height: 170px;
+  padding: 16px;
+}
+
+.archive-section-head {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+  color: #7b4c24;
+}
+
+.archive-section-head span {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(184, 138, 66, 0.16);
+  font-weight: 700;
+}
+
+.archive-entry-card {
+  position: relative;
+  padding: 12px 42px 12px 12px;
+  border: 1px solid rgba(151, 106, 55, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 249, 235, 0.66);
+}
+
+.archive-entry-card span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.archive-entry-card h4 {
+  margin: 2px 0 4px;
+  font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+}
+
+.archive-entry-card p {
+  margin: 0;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+
+.archive-entry-card .icon-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.archive-section-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid rgba(151, 106, 55, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 249, 235, 0.66);
+  color: #6a4525;
+  font-size: 0.88rem;
+}
+
+.archive-gate-actions {
+  justify-content: center;
+}
+
 .vault-page,
 .about-scroll {
   max-width: 760px;
@@ -2333,6 +2697,15 @@ body[data-theme="atelier"] .top-search input::placeholder {
     padding: 24px;
   }
 
+  .research-showcase,
+  .archive-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .archive-entry-form {
+    grid-template-columns: 1fr;
+  }
+
   .library-page {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
@@ -2423,7 +2796,11 @@ body[data-theme="atelier"] .top-search input::placeholder {
   .library-metrics,
   .course-grid.large,
   .workflow-ribbon.large,
-  .library-friends.grid {
+  .library-friends.grid,
+  .research-direction-grid,
+  .public-work-grid,
+  .archive-project-grid,
+  .archive-section-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2456,6 +2833,17 @@ body[data-theme="atelier"] .top-search input::placeholder {
 
   .library-hero .library-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .research-direction-intro,
+  .archive-main-head,
+  .archive-project-head {
+    display: block;
+  }
+
+  .research-direction-intro .secondary-button,
+  .archive-main-head .secondary-button {
+    margin-top: 12px;
   }
 
   .portrait-panel,

@@ -35,6 +35,17 @@
     body: ""
   };
 
+  const VAULT_STORAGE_KEY = "geoffrey-research-archive";
+  const LEGACY_VAULT_STORAGE_KEY = "geoffrey-idea-vault";
+  const VAULT_REMOTE_PATH = "data/archive/research-workbench.json";
+  const archiveSections = [
+    { id: "literature", label: "文献收集", icon: "book-open" },
+    { id: "code", label: "代码工作流", icon: "square-terminal" },
+    { id: "notes", label: "灵感手记", icon: "sparkles" },
+    { id: "latex", label: "LaTeX 论文工程", icon: "file-text" },
+    { id: "final", label: "投稿终版", icon: "send" }
+  ];
+
   function today() {
     return new Date().toISOString().slice(0, 10);
   }
@@ -88,7 +99,7 @@
   function setActiveNav(path) {
     const root = path.startsWith("/courses") || path.startsWith("/blog") || path.startsWith("/post/")
       ? "/courses"
-      : path.startsWith("/workflow") || path.startsWith("/resources")
+      : path.startsWith("/workflow") || path.startsWith("/research") || path.startsWith("/resources")
         ? "/workflow"
         : path.startsWith("/friends")
           ? "/friends"
@@ -348,6 +359,41 @@
     `;
   }
 
+  function renderResearchDirectionCard(direction) {
+    const archives = direction.archives || [];
+    return `
+      <a class="research-direction-card" href="#/research/${encodeURIComponent(direction.id)}">
+        <div class="course-icon">${icon(direction.icon || "folder-kanban")}</div>
+        <span>${escapeHtml(direction.subtitle || "")}</span>
+        <h3>${escapeHtml(direction.title)}</h3>
+        <p>${escapeHtml(direction.description || "")}</p>
+        <small>${archives.length} 个研究线索</small>
+      </a>
+    `;
+  }
+
+  function renderPublicWorkCard(work) {
+    return `
+      <article class="public-work-card">
+        <div class="plan-meta">
+          <span>${escapeHtml(work.type || "Research")}</span>
+          <span>${escapeHtml(work.year || "")}</span>
+        </div>
+        <h3>${escapeHtml(work.title)}</h3>
+        <p>${escapeHtml(work.summary || "")}</p>
+        <div class="card-tags">
+          <span class="tag">${escapeHtml(work.direction || "研究")}</span>
+          <span class="tag">${escapeHtml(work.status || "整理中")}</span>
+        </div>
+        <div class="button-row">
+          ${(work.links || [])
+            .map((link) => `<a class="secondary-button compact-button" href="${escapeHtml(link.url)}">${icon("external-link")}${escapeHtml(link.label)}</a>`)
+            .join("")}
+        </div>
+      </article>
+    `;
+  }
+
   function renderFriendTiles(limit = 3) {
     const friends = (state.site.friends || []).slice(0, limit);
     if (!friends.length) return '<div class="empty-state">暂无友链</div>';
@@ -376,8 +422,8 @@
     const totalNotes = (state.site.posts || []).length + (state.site.diary || []).length + courses.length;
     const compassLinks = [
       { href: "#/courses", icon: "book-open", label: "课程", note: "Notes" },
-      { href: "#/workflow", icon: "microscope", label: "科研", note: "Workflow" },
-      { href: "#/ideas", icon: "lock-keyhole", label: "灵感", note: "Private" },
+      { href: "#/workflow", icon: "microscope", label: "论文", note: "Works" },
+      { href: "#/ideas", icon: "folder-open", label: "档案", note: "Desk" },
       { href: "#/plans", icon: "calendar-check", label: "计划", note: "Plans" },
       { href: "#/friends", icon: "link", label: "友链", note: "Friends" }
     ];
@@ -416,12 +462,12 @@
             <div class="hero-copy">
               <span class="script-kicker">Bibliotheca Geoffrey</span>
               <h2>Geoffrey 的研究书房</h2>
-              <p>阅读、研究、音乐与长期思考。把课程笔记、论文流程、计划和灵感收进一座有秩序的私人图书馆。</p>
+              <p>阅读、研究、音乐与长期思考。把课程笔记、论文流程、计划和手记收进一座有秩序的私人图书馆。</p>
               <div class="library-metrics">
                 ${renderLibraryMetric("scroll-text", "笔记条目", String(totalNotes))}
                 ${renderLibraryMetric("file-stack", "研究项目", String((workflows.projects || []).length))}
                 ${renderLibraryMetric("book-open", "课程档案", String(courses.length))}
-                ${renderLibraryMetric("lightbulb", "灵感保险柜", "本地加密")}
+                ${renderLibraryMetric("folder-open", "研究档案", "个人口令")}
               </div>
             </div>
           </section>
@@ -440,10 +486,10 @@
           <section class="library-section workflow-section">
             <div class="ornate-heading">
               <div>
-                <h2>${icon("workflow")}论文与科研项目工作流</h2>
-                <p>从文献到归档，把科研过程做成可复用的系统。</p>
+                <h2>${icon("workflow")}研究工作与论文</h2>
+                <p>公开成果、研究方向和可复用流程集中整理。</p>
               </div>
-              <a href="#/workflow">进入工作流</a>
+              <a href="#/workflow">查看成果</a>
             </div>
             <div class="workflow-ribbon">${(workflows.stages || []).map(renderWorkflowStage).join("")}</div>
             <div class="project-ledger">
@@ -846,32 +892,85 @@
 
   function renderWorkflow() {
     const workflows = state.site.workflows || { stages: [], projects: [] };
+    const research = state.site.research || { directions: [], publicWorks: [] };
     app.innerHTML = `
-      ${pageHeading("论文与科研项目工作流", "把科研从灵感、文献、数据、模型、实证、写作到归档做成可重复的路径。")}
-      <section class="library-section full-width">
+      ${pageHeading("研究工作与论文", "公开成果、研究方向与可复用流程。适合访客浏览，也方便你长期整理。")}
+      <section class="research-showcase">
+        <div class="research-hero-card">
+          <span class="script-kicker">Research Gallery</span>
+          <h2>从方向到论文，把研究陈列成清晰的路径。</h2>
+          <p>这里放已经可以公开的研究工作、论文状态、方向概览和相关入口；未完成草稿仍留在个人工作台里。</p>
+          <div class="button-row">
+            <a class="primary-button" href="#/ideas">${icon("folder-open")}进入研究档案</a>
+            <a class="secondary-button" href="#/resources">${icon("archive")}资源库</a>
+          </div>
+        </div>
         <div class="workflow-ribbon large">${(workflows.stages || []).map(renderWorkflowStage).join("")}</div>
       </section>
+
       <section class="library-section full-width">
         <div class="ornate-heading">
           <div>
-            <h2>${icon("clipboard-list")}项目台账</h2>
-            <p>近期论文、科研项目和版本状态。</p>
+            <h2>${icon("folder-kanban")}研究方向</h2>
+            <p>按长期方向组织公开线索，点击后查看该方向下的项目链路。</p>
+          </div>
+          <a href="#/ideas">个人工作台</a>
+        </div>
+        <div class="research-direction-grid">
+          ${(research.directions || []).map(renderResearchDirectionCard).join("") || '<div class="empty-state">暂无研究方向</div>'}
+        </div>
+      </section>
+
+      <section class="library-section full-width">
+        <div class="ornate-heading">
+          <div>
+            <h2>${icon("scroll-text")}公开研究与论文</h2>
+            <p>已经完成、正在整理或准备公开展示的成果。</p>
           </div>
           <a href="#/resources">资源库</a>
         </div>
-        <div class="project-ledger expanded">
-          ${(workflows.projects || [])
+        <div class="public-work-grid">
+          ${(research.publicWorks || []).map(renderPublicWorkCard).join("") || '<div class="empty-state">暂无公开研究记录</div>'}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderResearchDirection(slug) {
+    const research = state.site.research || { directions: [] };
+    const direction = (research.directions || []).find((item) => item.id === slug);
+    if (!direction) {
+      renderNotFound();
+      return;
+    }
+    app.innerHTML = `
+      ${pageHeading(direction.title, direction.subtitle || "研究方向")}
+      <section class="library-section full-width research-direction-detail">
+        <div class="research-direction-intro">
+          <div class="course-icon">${icon(direction.icon || "folder-kanban")}</div>
+          <div>
+            <h2>${escapeHtml(direction.title)}</h2>
+            <p>${escapeHtml(direction.description || "")}</p>
+          </div>
+          <a class="secondary-button" href="#/workflow">${icon("arrow-left")}返回总览</a>
+        </div>
+        <div class="archive-project-grid public-archive-grid">
+          ${(direction.archives || [])
             .map(
-              (project) => `
-                <a href="${escapeHtml(project.url || "#/workflow")}">
-                  <span>${escapeHtml(project.date || "")}</span>
-                  <strong>${escapeHtml(project.title)}</strong>
-                  <em>${escapeHtml(project.type || "")}</em>
-                  <small>${escapeHtml(project.status || "")}</small>
-                </a>
+              (archive) => `
+                <article class="archive-project-card">
+                  <span>${escapeHtml(archive.status || "")}</span>
+                  <h3>${escapeHtml(archive.title)}</h3>
+                  <p>${escapeHtml(archive.summary || "")}</p>
+                  <div class="archive-section-grid">
+                    ${(archive.workflow || [])
+                      .map((step) => `<div class="archive-section-pill">${icon("chevron-right")}${escapeHtml(step)}</div>`)
+                      .join("")}
+                  </div>
+                </article>
               `
             )
-            .join("") || '<div class="empty-state">暂无科研项目</div>'}
+            .join("") || '<div class="empty-state">暂无公开项目链路</div>'}
         </div>
       </section>
     `;
@@ -897,11 +996,11 @@
         <div class="about-seal">${escapeHtml((profile.nickname || "G").slice(0, 1))}</div>
         <h2>${escapeHtml(profile.siteTitle || "Geoffrey 的研究书房")}</h2>
         <p>${escapeHtml(profile.bio || "")}</p>
-        <p>站点采用静态 GitHub Pages 部署，内容以 Markdown 和 JSON 维护。公开内容进入仓库，私密灵感只保存在浏览器本地加密库中。</p>
+        <p>站点采用静态 GitHub Pages 部署，内容以 Markdown 和 JSON 维护。公开内容进入仓库，个人工作台只在口令进入后使用。</p>
         <div class="button-row">
           <a class="secondary-button" href="#/courses">${icon("book-open")}课程笔记</a>
-          <a class="secondary-button" href="#/workflow">${icon("workflow")}科研工作流</a>
-          <a class="secondary-button" href="#/ideas">${icon("lock-keyhole")}私密灵感</a>
+          <a class="secondary-button" href="#/workflow">${icon("workflow")}研究与论文</a>
+          <a class="secondary-button" href="#/ideas">${icon("folder-open")}研究档案</a>
         </div>
       </section>
     `;
@@ -910,15 +1009,111 @@
   const vaultState = {
     unlocked: false,
     password: "",
-    ideas: []
+    archive: null,
+    activeDirectionId: "derivatives",
+    activeProjectId: "commercial-hedging"
   };
 
+  function defaultArchive() {
+    return {
+      version: 2,
+      updatedAt: today(),
+      directions: [
+        {
+          id: "derivatives",
+          title: "衍生品方向",
+          subtitle: "期货、期权、风险管理与套期保值",
+          projects: [
+            {
+              id: "commercial-hedging",
+              title: "商业套保",
+              status: "准备中",
+              summary: "企业风险管理、套保有效性、会计处理、数据与识别策略的长期研究线索。",
+              entries: []
+            }
+          ]
+        }
+      ]
+    };
+  }
+
+  function normalizeArchive(value) {
+    const base = defaultArchive();
+    const archive = value && typeof value === "object" ? value : base;
+    const directions = Array.isArray(archive.directions) && archive.directions.length ? archive.directions : base.directions;
+    return {
+      version: 2,
+      updatedAt: archive.updatedAt || today(),
+      directions: directions.map((direction) => ({
+        id: safeSlug(direction.id || direction.title) || `direction-${Date.now()}`,
+        title: direction.title || "未命名方向",
+        subtitle: direction.subtitle || "",
+        projects: Array.isArray(direction.projects)
+          ? direction.projects.map((project) => ({
+              id: safeSlug(project.id || project.title) || `project-${Date.now()}`,
+              title: project.title || "未命名项目",
+              status: project.status || "整理中",
+              summary: project.summary || "",
+              entries: Array.isArray(project.entries)
+                ? project.entries.map((entry) => ({
+                    id: entry.id || `entry-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                    section: archiveSections.some((section) => section.id === entry.section) ? entry.section : "notes",
+                    title: entry.title || "未命名条目",
+                    body: entry.body || "",
+                    date: entry.date || today()
+                  }))
+                : []
+            }))
+          : []
+      }))
+    };
+  }
+
+  function archiveFromLegacyIdeas(ideas) {
+    const archive = defaultArchive();
+    archive.directions[0].projects[0].entries = (ideas || []).map((idea, index) => ({
+      id: `legacy-${index}-${Date.now()}`,
+      section: "notes",
+      title: idea.title || "旧手记",
+      body: idea.body || "",
+      date: idea.date || today()
+    }));
+    return archive;
+  }
+
+  function ensureArchiveSelection() {
+    vaultState.archive = normalizeArchive(vaultState.archive);
+    const directions = vaultState.archive.directions;
+    if (!directions.some((direction) => direction.id === vaultState.activeDirectionId)) {
+      vaultState.activeDirectionId = directions[0]?.id || "";
+    }
+    const direction = activeArchiveDirection();
+    if (direction && !direction.projects.some((project) => project.id === vaultState.activeProjectId)) {
+      vaultState.activeProjectId = direction.projects[0]?.id || "";
+    }
+  }
+
+  function activeArchiveDirection() {
+    return (vaultState.archive?.directions || []).find((direction) => direction.id === vaultState.activeDirectionId);
+  }
+
+  function activeArchiveProject() {
+    const direction = activeArchiveDirection();
+    return (direction?.projects || []).find((project) => project.id === vaultState.activeProjectId);
+  }
+
   function vaultBytesToBase64(bytes) {
-    return btoa(String.fromCharCode(...bytes));
+    return bytesToBase64(bytes);
   }
 
   function vaultBase64ToBytes(value) {
     return Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
+  }
+
+  function base64ToUtf8(value) {
+    const binary = atob(String(value || "").replace(/\s/g, ""));
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
   }
 
   async function vaultKey(password, salt) {
@@ -930,7 +1125,7 @@
       ["deriveKey"]
     );
     return crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt, iterations: 120000, hash: "SHA-256" },
+      { name: "PBKDF2", salt, iterations: 160000, hash: "SHA-256" },
       baseKey,
       { name: "AES-GCM", length: 256 },
       false,
@@ -939,27 +1134,32 @@
   }
 
   async function vaultSave() {
+    vaultState.archive = normalizeArchive(vaultState.archive);
+    vaultState.archive.updatedAt = new Date().toISOString();
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const key = await vaultKey(vaultState.password, salt);
-    const payload = new TextEncoder().encode(JSON.stringify(vaultState.ideas));
+    const payload = new TextEncoder().encode(JSON.stringify({ version: 2, archive: vaultState.archive }));
     const cipher = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, payload));
     localStorage.setItem(
-      "geoffrey-idea-vault",
+      VAULT_STORAGE_KEY,
       JSON.stringify({
+        version: 2,
         salt: vaultBytesToBase64(salt),
         iv: vaultBytesToBase64(iv),
         cipher: vaultBytesToBase64(cipher)
       })
     );
+    localStorage.removeItem(LEGACY_VAULT_STORAGE_KEY);
   }
 
   async function vaultLoad(password) {
-    const raw = localStorage.getItem("geoffrey-idea-vault");
+    const raw = localStorage.getItem(VAULT_STORAGE_KEY) || localStorage.getItem(LEGACY_VAULT_STORAGE_KEY);
     if (!raw) {
       vaultState.password = password;
-      vaultState.ideas = [];
+      vaultState.archive = defaultArchive();
       vaultState.unlocked = true;
+      ensureArchiveSelection();
       await vaultSave();
       return;
     }
@@ -969,59 +1169,181 @@
     const cipher = vaultBase64ToBytes(record.cipher);
     const key = await vaultKey(password, salt);
     const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, cipher);
+    const parsed = JSON.parse(new TextDecoder().decode(plain));
     vaultState.password = password;
-    vaultState.ideas = JSON.parse(new TextDecoder().decode(plain));
+    vaultState.archive = Array.isArray(parsed) ? archiveFromLegacyIdeas(parsed) : normalizeArchive(parsed.archive || parsed);
     vaultState.unlocked = true;
+    ensureArchiveSelection();
+    await vaultSave();
+  }
+
+  async function uploadArchiveToGithub() {
+    await vaultSave();
+    const raw = localStorage.getItem(VAULT_STORAGE_KEY);
+    if (!raw) throw new Error("本地档案为空");
+    await putContent(VAULT_REMOTE_PATH, utf8ToBase64(raw), `Save ${VAULT_REMOTE_PATH}`);
+  }
+
+  async function downloadArchiveFromGithub() {
+    const session = studioSession();
+    const data = await githubRequest(`/contents/${encodeURIComponentPath(VAULT_REMOTE_PATH)}?ref=${encodeURIComponent(session.branch)}`);
+    localStorage.setItem(VAULT_STORAGE_KEY, base64ToUtf8(data.content));
+    localStorage.removeItem(LEGACY_VAULT_STORAGE_KEY);
+    if (vaultState.unlocked && vaultState.password) await vaultLoad(vaultState.password);
+  }
+
+  function renderArchiveDirectionButton(direction) {
+    const active = direction.id === vaultState.activeDirectionId;
+    return `
+      <button class="archive-nav-button ${active ? "is-active" : ""}" type="button" data-archive-direction="${escapeHtml(direction.id)}">
+        <strong>${escapeHtml(direction.title)}</strong>
+        <span>${escapeHtml(direction.subtitle || `${(direction.projects || []).length} 个项目`)}</span>
+      </button>
+    `;
+  }
+
+  function renderArchiveProjectCard(project) {
+    const active = project.id === vaultState.activeProjectId;
+    const count = (project.entries || []).length;
+    return `
+      <button class="archive-project-card ${active ? "is-active" : ""}" type="button" data-archive-project="${escapeHtml(project.id)}">
+        <span>${escapeHtml(project.status || "整理中")}</span>
+        <h3>${escapeHtml(project.title)}</h3>
+        <p>${escapeHtml(project.summary || "")}</p>
+        <small>${count} 条记录</small>
+      </button>
+    `;
+  }
+
+  function renderArchiveEntry(entry) {
+    return `
+      <article class="archive-entry-card">
+        <span>${escapeHtml(formatDate(entry.date))}</span>
+        <h4>${escapeHtml(entry.title)}</h4>
+        <p>${escapeHtml(entry.body)}</p>
+        <button class="icon-button" type="button" data-delete-entry="${escapeHtml(entry.id)}" title="删除">${icon("trash-2")}</button>
+      </article>
+    `;
+  }
+
+  function renderArchiveSection(section, project) {
+    const entries = (project?.entries || []).filter((entry) => entry.section === section.id);
+    return `
+      <article class="archive-section-card">
+        <div class="archive-section-head">
+          ${icon(section.icon)}
+          <strong>${escapeHtml(section.label)}</strong>
+          <span>${entries.length}</span>
+        </div>
+        <div class="archive-entry-list">
+          ${entries.length ? entries.map(renderArchiveEntry).join("") : '<p class="muted-line">暂无记录</p>'}
+        </div>
+      </article>
+    `;
   }
 
   function renderIdeasVault() {
-    const exists = !!localStorage.getItem("geoffrey-idea-vault");
+    const exists = !!localStorage.getItem(VAULT_STORAGE_KEY) || !!localStorage.getItem(LEGACY_VAULT_STORAGE_KEY);
     if (!vaultState.unlocked) {
       app.innerHTML = `
-        ${pageHeading("私密灵感 / Idea Vault", "科研想法不会进入 GitHub 仓库；这里只用浏览器本地加密保存。")}
-        <section class="vault-page">
-          <div class="lock-emblem large">${icon("lock-keyhole")}</div>
-          <h2>${exists ? "解锁灵感保险柜" : "创建灵感保险柜"}</h2>
-          <p>请输入密码。密码不会上传，也不会保存；如果忘记密码，已加密内容无法恢复。</p>
+        ${pageHeading("研究档案", "个人工作台。输入口令后继续整理方向、项目和手记。")}
+        <section class="vault-page archive-gate">
+          <div class="lock-emblem large">${icon("folder-open")}</div>
+          <h2>${exists ? "进入档案桌" : "建立档案桌"}</h2>
+          <p>口令只在本次浏览器会话中使用。若需要从头开始，可以重设本地档案。</p>
           <form id="vault-unlock-form" class="vault-form">
-            <input class="studio-input" id="vault-password" type="password" placeholder="输入本地保险柜密码" required />
-            <button class="primary-button" type="submit">${icon("key-round")}${exists ? "解锁" : "创建并进入"}</button>
+            <input class="studio-input" id="vault-password" type="password" placeholder="个人口令" autocomplete="current-password" required />
+            <button class="primary-button" type="submit">${icon("key-round")}${exists ? "进入" : "建立并进入"}</button>
           </form>
+          <div class="button-row archive-gate-actions">
+            <button class="secondary-button" type="button" id="archive-sync-download">${icon("cloud-download")}从 GitHub 取回</button>
+            ${exists ? `<button class="secondary-button" type="button" id="vault-reset-button">${icon("rotate-ccw")}重设本地档案</button>` : ""}
+          </div>
           <div class="status-line" id="vault-status"></div>
         </section>
       `;
       return;
     }
 
+    ensureArchiveSelection();
+    const direction = activeArchiveDirection();
+    const project = activeArchiveProject();
     app.innerHTML = `
-      ${pageHeading("私密灵感 / Idea Vault", "本地加密草稿箱。适合存放未公开 idea、研究假说和突然出现的直觉。")}
-      <section class="vault-workbench">
-        <form id="vault-idea-form" class="vault-editor">
-          <input class="studio-input" id="vault-title" placeholder="灵感标题" required />
-          <textarea class="studio-textarea" id="vault-body" placeholder="写下研究想法、变量、识别策略、数据来源或下一步..." required></textarea>
-          <div class="button-row">
-            <button class="primary-button" type="submit">${icon("save")}加密保存</button>
-            <button class="secondary-button" type="button" id="vault-lock-button">${icon("lock")}锁定</button>
+      ${pageHeading("研究档案", "方向、项目、文献、代码、手记和终版材料的整理台。")}
+      <section class="archive-layout">
+        <aside class="archive-sidebar">
+          <div class="ornate-heading compact-heading">
+            <div>
+              <h2>${icon("compass")}研究方向</h2>
+              <p>按长期问题组织。</p>
+            </div>
           </div>
-        </form>
-        <div class="idea-list">
+          <div class="archive-nav-list">
+            ${(vaultState.archive.directions || []).map(renderArchiveDirectionButton).join("")}
+          </div>
+          <form id="archive-direction-form" class="archive-mini-form">
+            <input class="studio-input" id="archive-direction-title" placeholder="新方向，如：能源期货" required />
+            <input class="studio-input" id="archive-direction-subtitle" placeholder="简短说明" />
+            <button class="secondary-button" type="submit">${icon("plus")}新增方向</button>
+          </form>
+          <div class="sync-panel">
+            <strong>${icon("cloud")}GitHub 同步</strong>
+            <p>使用写作台里的 GitHub Token 读写档案文件。</p>
+            <div class="button-row">
+              <button class="secondary-button compact-button" type="button" id="archive-sync-upload">${icon("cloud-upload")}保存到 GitHub</button>
+              <button class="secondary-button compact-button" type="button" id="archive-sync-download">${icon("cloud-download")}取回</button>
+            </div>
+            <div class="status-line" id="archive-sync-status"></div>
+          </div>
+        </aside>
+
+        <section class="archive-main">
+          <div class="archive-main-head">
+            <div>
+              <span class="script-kicker">Research Desk</span>
+              <h2>${escapeHtml(direction?.title || "研究方向")}</h2>
+              <p>${escapeHtml(direction?.subtitle || "")}</p>
+            </div>
+            <button class="secondary-button" type="button" id="vault-lock-button">${icon("log-out")}收起</button>
+          </div>
+
+          <div class="archive-project-grid">
+            ${(direction?.projects || []).map(renderArchiveProjectCard).join("") || '<div class="empty-state">这个方向还没有项目</div>'}
+          </div>
+
+          <form id="archive-project-form" class="archive-inline-form">
+            <input class="studio-input" id="archive-project-title" placeholder="新项目，如：商业套保" required />
+            <input class="studio-input" id="archive-project-summary" placeholder="项目说明" />
+            <button class="secondary-button" type="submit">${icon("folder-plus")}新增项目</button>
+          </form>
+
           ${
-            vaultState.ideas.length
-              ? vaultState.ideas
-                  .map(
-                    (idea, index) => `
-                      <article class="idea-card">
-                        <span>${escapeHtml(formatDate(idea.date))}</span>
-                        <h3>${escapeHtml(idea.title)}</h3>
-                        <p>${escapeHtml(idea.body)}</p>
-                        <button class="icon-button" type="button" data-delete-idea="${index}" title="删除">${icon("trash-2")}</button>
-                      </article>
-                    `
-                  )
-                  .join("")
-              : '<div class="empty-state">保险柜里还没有灵感</div>'
+            project
+              ? `
+                <div class="archive-workbench">
+                  <div class="archive-project-head">
+                    <div>
+                      <span>${escapeHtml(project.status || "整理中")}</span>
+                      <h3>${escapeHtml(project.title)}</h3>
+                      <p>${escapeHtml(project.summary || "")}</p>
+                    </div>
+                  </div>
+                  <form id="archive-entry-form" class="archive-entry-form">
+                    <select class="studio-select" id="archive-entry-section">
+                      ${archiveSections.map((section) => `<option value="${section.id}">${escapeHtml(section.label)}</option>`).join("")}
+                    </select>
+                    <input class="studio-input" id="archive-entry-title" placeholder="记录标题" required />
+                    <textarea class="studio-textarea" id="archive-entry-body" placeholder="记录文献、代码路径、模型想法、LaTeX 任务或投稿备忘..." required></textarea>
+                    <button class="primary-button" type="submit">${icon("save")}保存记录</button>
+                  </form>
+                  <div class="archive-section-grid">
+                    ${archiveSections.map((section) => renderArchiveSection(section, project)).join("")}
+                  </div>
+                </div>
+              `
+              : ""
           }
-        </div>
+        </section>
       </section>
     `;
   }
@@ -1488,35 +1810,144 @@
         event.preventDefault();
         const password = document.getElementById("vault-password").value;
         const status = document.getElementById("vault-status");
-        if (status) status.textContent = "正在解锁...";
+        if (status) status.textContent = "正在进入...";
         try {
           await vaultLoad(password);
           renderRoute();
         } catch {
-          if (status) status.textContent = "密码不正确，或本地保险柜数据已损坏。";
+          if (status) status.textContent = "口令不匹配，或档案数据不可用。";
         }
       });
     }
 
-    const vaultIdeaForm = document.getElementById("vault-idea-form");
-    if (vaultIdeaForm) {
-      vaultIdeaForm.addEventListener("submit", async (event) => {
+    const vaultResetButton = document.getElementById("vault-reset-button");
+    if (vaultResetButton) {
+      vaultResetButton.addEventListener("click", () => {
+        const status = document.getElementById("vault-status");
+        if (!confirm("确定重设本地档案吗？旧内容不会保留。")) return;
+        localStorage.removeItem(VAULT_STORAGE_KEY);
+        localStorage.removeItem(LEGACY_VAULT_STORAGE_KEY);
+        vaultState.unlocked = false;
+        vaultState.password = "";
+        vaultState.archive = null;
+        if (status) status.textContent = "已重设。请用新的口令建立档案桌。";
+        renderRoute();
+      });
+    }
+
+    app.querySelectorAll("[data-archive-direction]").forEach((button) => {
+      button.addEventListener("click", () => {
+        vaultState.activeDirectionId = button.dataset.archiveDirection;
+        const direction = activeArchiveDirection();
+        vaultState.activeProjectId = direction?.projects?.[0]?.id || "";
+        renderRoute();
+      });
+    });
+
+    app.querySelectorAll("[data-archive-project]").forEach((button) => {
+      button.addEventListener("click", () => {
+        vaultState.activeProjectId = button.dataset.archiveProject;
+        renderRoute();
+      });
+    });
+
+    const archiveDirectionForm = document.getElementById("archive-direction-form");
+    if (archiveDirectionForm) {
+      archiveDirectionForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        const title = document.getElementById("vault-title").value.trim();
-        const body = document.getElementById("vault-body").value.trim();
-        if (!title || !body) return;
-        vaultState.ideas.unshift({ title, body, date: today() });
+        const title = document.getElementById("archive-direction-title").value.trim();
+        const subtitle = document.getElementById("archive-direction-subtitle").value.trim();
+        if (!title) return;
+        const id = safeSlug(title) || `direction-${Date.now()}`;
+        vaultState.archive.directions.unshift({ id, title, subtitle, projects: [] });
+        vaultState.activeDirectionId = id;
+        vaultState.activeProjectId = "";
         await vaultSave();
         renderRoute();
       });
     }
 
-    app.querySelectorAll("[data-delete-idea]").forEach((button) => {
-      button.addEventListener("click", async () => {
-        const index = Number(button.dataset.deleteIdea);
-        vaultState.ideas.splice(index, 1);
+    const archiveProjectForm = document.getElementById("archive-project-form");
+    if (archiveProjectForm) {
+      archiveProjectForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const direction = activeArchiveDirection();
+        const title = document.getElementById("archive-project-title").value.trim();
+        const summary = document.getElementById("archive-project-summary").value.trim();
+        if (!direction || !title) return;
+        const id = safeSlug(title) || `project-${Date.now()}`;
+        direction.projects.unshift({ id, title, status: "整理中", summary, entries: [] });
+        vaultState.activeProjectId = id;
         await vaultSave();
         renderRoute();
+      });
+    }
+
+    const archiveEntryForm = document.getElementById("archive-entry-form");
+    if (archiveEntryForm) {
+      archiveEntryForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const project = activeArchiveProject();
+        if (!project) return;
+        const section = document.getElementById("archive-entry-section").value;
+        const title = document.getElementById("archive-entry-title").value.trim();
+        const body = document.getElementById("archive-entry-body").value.trim();
+        if (!title || !body) return;
+        project.entries.unshift({
+          id: `entry-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          section,
+          title,
+          body,
+          date: today()
+        });
+        await vaultSave();
+        renderRoute();
+      });
+    }
+
+    app.querySelectorAll("[data-delete-entry]").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const project = activeArchiveProject();
+        if (!project) return;
+        project.entries = (project.entries || []).filter((entry) => entry.id !== button.dataset.deleteEntry);
+        await vaultSave();
+        renderRoute();
+      });
+    });
+
+    const archiveSyncUpload = document.getElementById("archive-sync-upload");
+    if (archiveSyncUpload) {
+      archiveSyncUpload.addEventListener("click", async () => {
+        const status = document.getElementById("archive-sync-status");
+        if (!studioSession().token) {
+          if (status) status.textContent = "先进入写作台填写 GitHub Token。";
+          return;
+        }
+        if (status) status.textContent = "正在保存到 GitHub...";
+        try {
+          await uploadArchiveToGithub();
+          if (status) status.textContent = "已保存到 GitHub。";
+        } catch (error) {
+          if (status) status.textContent = `同步失败：${error.message}`;
+        }
+      });
+    }
+
+    app.querySelectorAll("#archive-sync-download").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const status = document.getElementById("archive-sync-status") || document.getElementById("vault-status");
+        if (!studioSession().token) {
+          if (status) status.textContent = "先进入写作台填写 GitHub Token。";
+          return;
+        }
+        if (status) status.textContent = "正在从 GitHub 取回...";
+        try {
+          await downloadArchiveFromGithub();
+          if (status) status.textContent = "已取回。请输入口令继续。";
+          renderRoute();
+        } catch (error) {
+          if (status) status.textContent = `取回失败：${error.message}`;
+        }
       });
     });
 
@@ -1525,7 +1956,7 @@
       vaultLockButton.addEventListener("click", () => {
         vaultState.unlocked = false;
         vaultState.password = "";
-        vaultState.ideas = [];
+        vaultState.archive = null;
         renderRoute();
       });
     }
@@ -1629,6 +2060,7 @@
     if (route.path === "/") renderHome();
     else if (route.path === "/courses") renderCourses();
     else if (route.path === "/workflow") renderWorkflow();
+    else if (route.path.startsWith("/research/")) renderResearchDirection(decodeURIComponent(route.path.slice("/research/".length)));
     else if (route.path === "/friends") renderFriendsPage();
     else if (route.path === "/ideas") renderIdeasVault();
     else if (route.path === "/about") renderAbout();

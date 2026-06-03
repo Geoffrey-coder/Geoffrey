@@ -1,0 +1,78 @@
+{
+  "directions": [
+    {
+      "id": "derivatives",
+      "title": "衍生品方向",
+      "subtitle": "期货、期权、风险管理与套期保值",
+      "description": "围绕商品期货、企业风险管理、保证金、基差与衍生品市场微观结构建立长期研究档案。",
+      "icon": "bar-chart-3",
+      "archives": [
+        {
+          "id": "commercial-hedging",
+          "title": "商业套保",
+          "status": "准备中",
+          "summary": "从企业套期保值动机、套保有效性、会计处理与实证识别入手，逐步形成可投稿论文工程。",
+          "workflow": [
+            "文献收集",
+            "代码工作流",
+            "灵感手记",
+            "LaTeX 论文工程",
+            "投稿终版"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "asset-pricing",
+      "title": "资产定价方向",
+      "subtitle": "风险因子、市场波动与非线性信息",
+      "description": "整理资产定价、波动率、因子模型与机器学习方法的公开研究脉络。",
+      "icon": "line-chart",
+      "archives": [
+        {
+          "id": "nonlinear-information",
+          "title": "非线性信息与市场波动",
+          "status": "进行中",
+          "summary": "把已有阅读、数据处理与模型思路沉淀成可复用研究路径。",
+          "workflow": [
+            "文献收集",
+            "数据清洗",
+            "模型推导",
+            "实证分析",
+            "写作归档"
+          ]
+        }
+      ]
+    }
+  ],
+  "publicWorks": [
+    {
+      "title": "资产定价中的非线性信息与市场波动",
+      "direction": "资产定价方向",
+      "year": "2026",
+      "type": "Working Paper",
+      "status": "整理中",
+      "summary": "围绕非线性信息结构、市场波动和资产定价表现整理公开版本。",
+      "links": [
+        {
+          "label": "相关札记",
+          "url": "#/blog?category=研究札记"
+        }
+      ]
+    },
+    {
+      "title": "机器学习在因果推断中的应用综述",
+      "direction": "计量与方法",
+      "year": "2026",
+      "type": "Review",
+      "status": "文献综述",
+      "summary": "面向论文写作与方法复盘的公开综述入口。",
+      "links": [
+        {
+          "label": "研究标签",
+          "url": "#/blog?tag=研究"
+        }
+      ]
+    }
+  ]
+}

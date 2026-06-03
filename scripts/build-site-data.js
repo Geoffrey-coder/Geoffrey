@@ -206,6 +206,7 @@ function build() {
   const plans = readJson("plans.json", []);
   const courses = readJson("courses.json", []);
   const workflows = readJson("workflows.json", { stages: [], projects: [] });
+  const research = readJson("research.json", { directions: [], publicWorks: [] });
   const posts = attachNeighbors(readCollection("posts", "post"));
   const diary = attachNeighbors(readCollection("diary", "diary"));
 
@@ -217,6 +218,7 @@ function build() {
     plans,
     courses,
     workflows,
+    research,
     posts,
     diary,
     recentPosts: posts.slice(0, 8),
@@ -234,7 +236,8 @@ function build() {
     resources,
     plans,
     courses,
-    workflows
+    workflows,
+    research
   });
 
   const outputPath = path.join(dataDir, "site.json");
