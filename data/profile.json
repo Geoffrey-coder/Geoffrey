@@ -1,0 +1,43 @@
+{
+  "siteTitle": "Geoffrey 的书桌",
+  "nickname": "Geoffrey",
+  "avatar": "resources/uploads/avatar.png",
+  "bio": "记录研究、阅读、写作和日常计划。这里尽量保持轻盈，方便长期维护。",
+  "location": "China",
+  "email": "",
+  "aesthetic": {
+    "title": "小而可爱的书桌",
+    "note": "奶油白、棉花粉、粉蓝、黄油色和一点抹茶绿，适合长文阅读，也保留一点软乎乎的个性。",
+    "poster": "resources/uploads/pastel-desk.png",
+    "palette": [
+      { "name": "奶油白", "color": "#fffaf0" },
+      { "name": "棉花粉", "color": "#f6adc6" },
+      { "name": "粉蓝", "color": "#9fd0ec" },
+      { "name": "黄油色", "color": "#ffe28a" },
+      { "name": "抹茶绿", "color": "#b7d982" },
+      { "name": "软墨棕", "color": "#6b5148" }
+    ],
+    "references": [
+      {
+        "title": "Chiikawa 官方角色页",
+        "subtitle": "角色图与性格参考",
+        "url": "https://www.chiikawaofficial.com/characters"
+      },
+      {
+        "title": "Spiralcute Chiikawa",
+        "subtitle": "版权与官方链接",
+        "url": "https://spiralcute.com/characters/chiikawa/en/"
+      },
+      {
+        "title": "Chiikawa Market",
+        "subtitle": "官方商品图参考",
+        "url": "https://chiikawamarket.jp/en"
+      }
+    ]
+  },
+  "github": {
+    "owner": "Geoffrey-coder",
+    "repo": "Geoffrey",
+    "branch": "main"
+  }
+}

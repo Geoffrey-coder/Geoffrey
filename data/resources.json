@@ -1,0 +1,23 @@
+[
+  {
+    "type": "PDF",
+    "title": "示例论文 PDF",
+    "description": "可以把 PDF 放入 resources/uploads/，再把链接填到这里。",
+    "url": "resources/uploads/example-paper.pdf",
+    "tags": ["论文", "PDF"]
+  },
+  {
+    "type": "Dataset",
+    "title": "公开数据集入口",
+    "description": "记录常用数据、说明文档或下载地址。",
+    "url": "https://github.com/",
+    "tags": ["数据", "研究"]
+  },
+  {
+    "type": "Link",
+    "title": "常用工具链接",
+    "description": "可放置写作、统计、绘图、排版等工具。",
+    "url": "https://pages.github.com/",
+    "tags": ["工具"]
+  }
+]

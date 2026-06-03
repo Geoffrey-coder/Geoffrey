@@ -1,0 +1,318 @@
+{
+  "generatedAt": "2026-06-03T01:55:17.589Z",
+  "profile": {
+    "siteTitle": "Geoffrey 的书桌",
+    "nickname": "Geoffrey",
+    "avatar": "resources/uploads/avatar.png",
+    "bio": "记录研究、阅读、写作和日常计划。这里尽量保持轻盈，方便长期维护。",
+    "location": "China",
+    "email": "",
+    "aesthetic": {
+      "title": "小而可爱的书桌",
+      "note": "奶油白、棉花粉、粉蓝、黄油色和一点抹茶绿，适合长文阅读，也保留一点软乎乎的个性。",
+      "poster": "resources/uploads/pastel-desk.png",
+      "palette": [
+        {
+          "name": "奶油白",
+          "color": "#fffaf0"
+        },
+        {
+          "name": "棉花粉",
+          "color": "#f6adc6"
+        },
+        {
+          "name": "粉蓝",
+          "color": "#9fd0ec"
+        },
+        {
+          "name": "黄油色",
+          "color": "#ffe28a"
+        },
+        {
+          "name": "抹茶绿",
+          "color": "#b7d982"
+        },
+        {
+          "name": "软墨棕",
+          "color": "#6b5148"
+        }
+      ],
+      "references": [
+        {
+          "title": "Chiikawa 官方角色页",
+          "subtitle": "角色图与性格参考",
+          "url": "https://www.chiikawaofficial.com/characters"
+        },
+        {
+          "title": "Spiralcute Chiikawa",
+          "subtitle": "版权与官方链接",
+          "url": "https://spiralcute.com/characters/chiikawa/en/"
+        },
+        {
+          "title": "Chiikawa Market",
+          "subtitle": "官方商品图参考",
+          "url": "https://chiikawamarket.jp/en"
+        }
+      ]
+    },
+    "github": {
+      "owner": "Geoffrey-coder",
+      "repo": "Geoffrey",
+      "branch": "main"
+    }
+  },
+  "friends": [
+    {
+      "title": "研究手记",
+      "subtitle": "论文、数据与方法",
+      "avatar": "resources/uploads/friend-research.png",
+      "url": "https://example.com"
+    },
+    {
+      "title": "代码花园",
+      "subtitle": "工具、脚本与实验",
+      "avatar": "resources/uploads/friend-code.png",
+      "url": "https://example.com"
+    },
+    {
+      "title": "阅读地图",
+      "subtitle": "书单与长文收藏",
+      "avatar": "resources/uploads/friend-reading.png",
+      "url": "https://example.com"
+    }
+  ],
+  "resources": [
+    {
+      "type": "PDF",
+      "title": "示例论文 PDF",
+      "description": "可以把 PDF 放入 resources/uploads/，再把链接填到这里。",
+      "url": "resources/uploads/example-paper.pdf",
+      "tags": [
+        "论文",
+        "PDF"
+      ]
+    },
+    {
+      "type": "Dataset",
+      "title": "公开数据集入口",
+      "description": "记录常用数据、说明文档或下载地址。",
+      "url": "https://github.com/",
+      "tags": [
+        "数据",
+        "研究"
+      ]
+    },
+    {
+      "type": "Link",
+      "title": "常用工具链接",
+      "description": "可放置写作、统计、绘图、排版等工具。",
+      "url": "https://pages.github.com/",
+      "tags": [
+        "工具"
+      ]
+    }
+  ],
+  "plans": [
+    {
+      "title": "整理研究笔记",
+      "status": "进行中",
+      "progress": 45,
+      "due": "2026-07-01",
+      "items": [
+        "梳理旧笔记",
+        "补充参考文献",
+        "发布精选文章"
+      ]
+    },
+    {
+      "title": "建立资源索引",
+      "status": "计划中",
+      "progress": 15,
+      "due": "2026-08-15",
+      "items": [
+        "分类 PDF",
+        "补充数据链接",
+        "标注使用场景"
+      ]
+    },
+    {
+      "title": "月度复盘",
+      "status": "已完成",
+      "progress": 100,
+      "due": "2026-06-30",
+      "items": [
+        "汇总输出",
+        "更新下月计划"
+      ]
+    }
+  ],
+  "posts": [
+    {
+      "type": "post",
+      "slug": "welcome",
+      "title": "欢迎来到我的个人博客",
+      "date": "2026-06-03",
+      "category": "站点说明",
+      "tags": [
+        "GitHub Pages",
+        "Markdown",
+        "写作"
+      ],
+      "pdf": "",
+      "summary": "这个站点使用原生 HTML、CSS、JavaScript 搭建，文章保存在仓库中，并由 GitHub Actions 自动部署。",
+      "path": "content/posts/welcome.md",
+      "url": "#/post/welcome",
+      "body": "# 欢迎来到我的个人博客\n\n这里是一个轻量的 GitHub Pages 博客。它把内容和代码都放在同一个仓库里，方便长期维护，也方便从 GitHub 网页直接修改 Markdown。\n\n## 为什么选择轻量方案\n\n静态博客最重要的是稳定、可迁移和容易维护。这个模板没有后端服务，也没有复杂框架，核心流程只有三步：\n\n1. 在 `content/posts/` 或 `content/diary/` 写 Markdown。\n2. 构建脚本扫描内容并生成 `data/site.json`。\n3. GitHub Actions 部署到 GitHub Pages。\n\n## 代码块\n\n```js\nconst message = \"保持简单，才能写得更久。\";\nconsole.log(message);\n```\n\n## 数学公式\n\n行内公式示例：$E = mc^2$。\n\n块级公式示例：\n\n$$\n\\hat{\\beta} = (X'X)^{-1}X'y\n$$\n\n## 图片与附件\n\nMarkdown 图片可以放在 `resources/uploads/`：\n\n![头像示例](resources/uploads/avatar.png)\n\n如果文章有 PDF，可以在 Front Matter 的 `pdf` 字段里填写链接。\n",
+      "raw": "---\ntitle: 欢迎来到我的个人博客\ndate: 2026-06-03\ncategory: 站点说明\ntags: [GitHub Pages, Markdown, 写作]\npdf:\nsummary: 这个站点使用原生 HTML、CSS、JavaScript 搭建，文章保存在仓库中，并由 GitHub Actions 自动部署。\n---\n\n# 欢迎来到我的个人博客\n\n这里是一个轻量的 GitHub Pages 博客。它把内容和代码都放在同一个仓库里，方便长期维护，也方便从 GitHub 网页直接修改 Markdown。\n\n## 为什么选择轻量方案\n\n静态博客最重要的是稳定、可迁移和容易维护。这个模板没有后端服务，也没有复杂框架，核心流程只有三步：\n\n1. 在 `content/posts/` 或 `content/diary/` 写 Markdown。\n2. 构建脚本扫描内容并生成 `data/site.json`。\n3. GitHub Actions 部署到 GitHub Pages。\n\n## 代码块\n\n```js\nconst message = \"保持简单，才能写得更久。\";\nconsole.log(message);\n```\n\n## 数学公式\n\n行内公式示例：$E = mc^2$。\n\n块级公式示例：\n\n$$\n\\hat{\\beta} = (X'X)^{-1}X'y\n$$\n\n## 图片与附件\n\nMarkdown 图片可以放在 `resources/uploads/`：\n\n![头像示例](resources/uploads/avatar.png)\n\n如果文章有 PDF，可以在 Front Matter 的 `pdf` 字段里填写链接。\n",
+      "wordCount": 413,
+      "previous": {
+        "slug": "reading-and-research",
+        "title": "如何维护一套长期研究笔记",
+        "url": "#/post/reading-and-research"
+      },
+      "next": null
+    },
+    {
+      "type": "post",
+      "slug": "reading-and-research",
+      "title": "如何维护一套长期研究笔记",
+      "date": "2026-06-02",
+      "category": "研究札记",
+      "tags": [
+        "研究",
+        "笔记",
+        "方法"
+      ],
+      "pdf": "",
+      "summary": "一套好的研究笔记不只保存信息，还应该帮助你回到问题本身。",
+      "path": "content/posts/reading-and-research.md",
+      "url": "#/post/reading-and-research",
+      "body": "# 如何维护一套长期研究笔记\n\n长期笔记的关键不是记录得越多越好，而是让每条记录都能被重新发现、重新组合、重新使用。\n\n## 固定入口\n\n可以把笔记分成几个稳定入口：论文、数据、模型、问题、想法。入口不宜太多，否则后续维护成本会迅速升高。\n\n## 保留上下文\n\n每条笔记最好留下三个信息：\n\n- 它来自哪里\n- 它解决什么问题\n- 以后可能怎样复用\n\n## 定期整理\n\n整理不是为了把笔记变漂亮，而是为了降低再次进入某个问题的成本。每隔一段时间，把零散摘录改写成短文，会比只保留摘抄更有价值。\n",
+      "raw": "---\ntitle: 如何维护一套长期研究笔记\ndate: 2026-06-02\ncategory: 研究札记\ntags: [研究, 笔记, 方法]\npdf:\nsummary: 一套好的研究笔记不只保存信息，还应该帮助你回到问题本身。\n---\n\n# 如何维护一套长期研究笔记\n\n长期笔记的关键不是记录得越多越好，而是让每条记录都能被重新发现、重新组合、重新使用。\n\n## 固定入口\n\n可以把笔记分成几个稳定入口：论文、数据、模型、问题、想法。入口不宜太多，否则后续维护成本会迅速升高。\n\n## 保留上下文\n\n每条笔记最好留下三个信息：\n\n- 它来自哪里\n- 它解决什么问题\n- 以后可能怎样复用\n\n## 定期整理\n\n整理不是为了把笔记变漂亮，而是为了降低再次进入某个问题的成本。每隔一段时间，把零散摘录改写成短文，会比只保留摘抄更有价值。\n",
+      "wordCount": 221,
+      "previous": null,
+      "next": {
+        "slug": "welcome",
+        "title": "欢迎来到我的个人博客",
+        "url": "#/post/welcome"
+      }
+    }
+  ],
+  "diary": [
+    {
+      "type": "diary",
+      "slug": "2026-06-03-first-note",
+      "title": "今天把博客搭起来",
+      "date": "2026-06-03",
+      "category": "日记",
+      "tags": [
+        "日常",
+        "建站"
+      ],
+      "pdf": "",
+      "summary": "日记也使用 Markdown，但不会出现在首页近期文章中。",
+      "path": "content/diary/2026-06-03-first-note.md",
+      "url": "#/diary/2026-06-03-first-note",
+      "body": "# 今天把博客搭起来\n\n把文章、日记、资源和计划放进同一个静态站点后，写作入口会变得很轻。日记默认不会出现在首页近期文章中，但仍然可以在日记页和搜索中找到。\n\n## 一个小目标\n\n先保持内容结构清楚，再慢慢调整视觉和栏目。\n",
+      "raw": "---\ntitle: 今天把博客搭起来\ndate: 2026-06-03\ncategory: 日记\ntags: [日常, 建站]\nsummary: 日记也使用 Markdown，但不会出现在首页近期文章中。\n---\n\n# 今天把博客搭起来\n\n把文章、日记、资源和计划放进同一个静态站点后，写作入口会变得很轻。日记默认不会出现在首页近期文章中，但仍然可以在日记页和搜索中找到。\n\n## 一个小目标\n\n先保持内容结构清楚，再慢慢调整视觉和栏目。\n",
+      "wordCount": 103,
+      "previous": null,
+      "next": null
+    }
+  ],
+  "recentPosts": [
+    {
+      "type": "post",
+      "slug": "welcome",
+      "title": "欢迎来到我的个人博客",
+      "date": "2026-06-03",
+      "category": "站点说明",
+      "tags": [
+        "GitHub Pages",
+        "Markdown",
+        "写作"
+      ],
+      "pdf": "",
+      "summary": "这个站点使用原生 HTML、CSS、JavaScript 搭建，文章保存在仓库中，并由 GitHub Actions 自动部署。",
+      "path": "content/posts/welcome.md",
+      "url": "#/post/welcome",
+      "body": "# 欢迎来到我的个人博客\n\n这里是一个轻量的 GitHub Pages 博客。它把内容和代码都放在同一个仓库里，方便长期维护，也方便从 GitHub 网页直接修改 Markdown。\n\n## 为什么选择轻量方案\n\n静态博客最重要的是稳定、可迁移和容易维护。这个模板没有后端服务，也没有复杂框架，核心流程只有三步：\n\n1. 在 `content/posts/` 或 `content/diary/` 写 Markdown。\n2. 构建脚本扫描内容并生成 `data/site.json`。\n3. GitHub Actions 部署到 GitHub Pages。\n\n## 代码块\n\n```js\nconst message = \"保持简单，才能写得更久。\";\nconsole.log(message);\n```\n\n## 数学公式\n\n行内公式示例：$E = mc^2$。\n\n块级公式示例：\n\n$$\n\\hat{\\beta} = (X'X)^{-1}X'y\n$$\n\n## 图片与附件\n\nMarkdown 图片可以放在 `resources/uploads/`：\n\n![头像示例](resources/uploads/avatar.png)\n\n如果文章有 PDF，可以在 Front Matter 的 `pdf` 字段里填写链接。\n",
+      "raw": "---\ntitle: 欢迎来到我的个人博客\ndate: 2026-06-03\ncategory: 站点说明\ntags: [GitHub Pages, Markdown, 写作]\npdf:\nsummary: 这个站点使用原生 HTML、CSS、JavaScript 搭建，文章保存在仓库中，并由 GitHub Actions 自动部署。\n---\n\n# 欢迎来到我的个人博客\n\n这里是一个轻量的 GitHub Pages 博客。它把内容和代码都放在同一个仓库里，方便长期维护，也方便从 GitHub 网页直接修改 Markdown。\n\n## 为什么选择轻量方案\n\n静态博客最重要的是稳定、可迁移和容易维护。这个模板没有后端服务，也没有复杂框架，核心流程只有三步：\n\n1. 在 `content/posts/` 或 `content/diary/` 写 Markdown。\n2. 构建脚本扫描内容并生成 `data/site.json`。\n3. GitHub Actions 部署到 GitHub Pages。\n\n## 代码块\n\n```js\nconst message = \"保持简单，才能写得更久。\";\nconsole.log(message);\n```\n\n## 数学公式\n\n行内公式示例：$E = mc^2$。\n\n块级公式示例：\n\n$$\n\\hat{\\beta} = (X'X)^{-1}X'y\n$$\n\n## 图片与附件\n\nMarkdown 图片可以放在 `resources/uploads/`：\n\n![头像示例](resources/uploads/avatar.png)\n\n如果文章有 PDF，可以在 Front Matter 的 `pdf` 字段里填写链接。\n",
+      "wordCount": 413,
+      "previous": {
+        "slug": "reading-and-research",
+        "title": "如何维护一套长期研究笔记",
+        "url": "#/post/reading-and-research"
+      },
+      "next": null
+    },
+    {
+      "type": "post",
+      "slug": "reading-and-research",
+      "title": "如何维护一套长期研究笔记",
+      "date": "2026-06-02",
+      "category": "研究札记",
+      "tags": [
+        "研究",
+        "笔记",
+        "方法"
+      ],
+      "pdf": "",
+      "summary": "一套好的研究笔记不只保存信息，还应该帮助你回到问题本身。",
+      "path": "content/posts/reading-and-research.md",
+      "url": "#/post/reading-and-research",
+      "body": "# 如何维护一套长期研究笔记\n\n长期笔记的关键不是记录得越多越好，而是让每条记录都能被重新发现、重新组合、重新使用。\n\n## 固定入口\n\n可以把笔记分成几个稳定入口：论文、数据、模型、问题、想法。入口不宜太多，否则后续维护成本会迅速升高。\n\n## 保留上下文\n\n每条笔记最好留下三个信息：\n\n- 它来自哪里\n- 它解决什么问题\n- 以后可能怎样复用\n\n## 定期整理\n\n整理不是为了把笔记变漂亮，而是为了降低再次进入某个问题的成本。每隔一段时间，把零散摘录改写成短文，会比只保留摘抄更有价值。\n",
+      "raw": "---\ntitle: 如何维护一套长期研究笔记\ndate: 2026-06-02\ncategory: 研究札记\ntags: [研究, 笔记, 方法]\npdf:\nsummary: 一套好的研究笔记不只保存信息，还应该帮助你回到问题本身。\n---\n\n# 如何维护一套长期研究笔记\n\n长期笔记的关键不是记录得越多越好，而是让每条记录都能被重新发现、重新组合、重新使用。\n\n## 固定入口\n\n可以把笔记分成几个稳定入口：论文、数据、模型、问题、想法。入口不宜太多，否则后续维护成本会迅速升高。\n\n## 保留上下文\n\n每条笔记最好留下三个信息：\n\n- 它来自哪里\n- 它解决什么问题\n- 以后可能怎样复用\n\n## 定期整理\n\n整理不是为了把笔记变漂亮，而是为了降低再次进入某个问题的成本。每隔一段时间，把零散摘录改写成短文，会比只保留摘抄更有价值。\n",
+      "wordCount": 221,
+      "previous": null,
+      "next": {
+        "slug": "welcome",
+        "title": "欢迎来到我的个人博客",
+        "url": "#/post/welcome"
+      }
+    }
+  ],
+  "categories": [
+    {
+      "name": "研究札记",
+      "count": 1
+    },
+    {
+      "name": "站点说明",
+      "count": 1
+    }
+  ],
+  "tags": [
+    {
+      "name": "笔记",
+      "count": 1
+    },
+    {
+      "name": "方法",
+      "count": 1
+    },
+    {
+      "name": "写作",
+      "count": 1
+    },
+    {
+      "name": "研究",
+      "count": 1
+    },
+    {
+      "name": "GitHub Pages",
+      "count": 1
+    },
+    {
+      "name": "Markdown",
+      "count": 1
+    }
+  ],
+  "diaryCategories": [
+    {
+      "name": "日记",
+      "count": 1
+    }
+  ],
+  "contentHash": "cb2a5d8675c0"
+}

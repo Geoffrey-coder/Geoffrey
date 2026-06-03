@@ -1,0 +1,10 @@
+{
+  "name": "github-pages-light-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "node scripts/build-site-data.js",
+    "serve": "python -m http.server 8093"
+  }
+}
