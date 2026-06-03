@@ -374,6 +374,13 @@
     const heroImage = profile.aesthetic?.hero || profile.aesthetic?.poster || "resources/uploads/vintage-library-hero.png";
     const heroBackground = assetUrl(heroImage);
     const totalNotes = (state.site.posts || []).length + (state.site.diary || []).length + courses.length;
+    const compassLinks = [
+      { href: "#/courses", icon: "book-open", label: "课程", note: "Notes" },
+      { href: "#/workflow", icon: "microscope", label: "科研", note: "Workflow" },
+      { href: "#/ideas", icon: "lock-keyhole", label: "灵感", note: "Private" },
+      { href: "#/plans", icon: "calendar-check", label: "计划", note: "Plans" },
+      { href: "#/friends", icon: "link", label: "友链", note: "Friends" }
+    ];
 
     app.innerHTML = `
       <div class="library-page">
@@ -389,11 +396,12 @@
 
           <section class="music-panel">
             <div class="vinyl-mark">${icon("music-2")}</div>
-            <div>
+            <div class="music-copy">
               <span>正在聆听</span>
               <strong>Piano Sonata No.14</strong>
               <small>Beethoven · Moonlight</small>
             </div>
+            <p class="music-note">慢板、月光与书页翻动声。</p>
             <div class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
           </section>
 
@@ -457,13 +465,23 @@
         </section>
 
         <aside class="library-right">
-          <section class="vault-card">
-            <div class="lock-emblem">${icon("lock-keyhole")}</div>
-            <div>
-              <h2>私密灵感 / Idea Vault</h2>
-              <p>科研想法、未完成构思和草稿只保存在本机浏览器，并用密码加密。</p>
-              <a class="seal-button" href="#/ideas">${icon("key-round")}打开灵感保险柜</a>
+          <section class="compass-panel" aria-label="研究书房导航">
+            <div class="compass-rose" aria-hidden="true"></div>
+            <div class="compass-medallion">
+              <span>G</span>
+              <small>Study Atlas</small>
             </div>
+            ${compassLinks
+              .map(
+                (item, index) => `
+                  <a class="compass-item compass-item-${index + 1}" href="${item.href}">
+                    ${icon(item.icon)}
+                    <strong>${item.label}</strong>
+                    <small>${item.note}</small>
+                  </a>
+                `
+              )
+              .join("")}
           </section>
 
           <section class="library-section compact friends-section">
