@@ -314,6 +314,14 @@
     `;
   }
 
+  function assetUrl(value) {
+    try {
+      return new URL(value, location.href).href;
+    } catch {
+      return value;
+    }
+  }
+
   function renderCourseCard(course) {
     const progress = Math.max(0, Math.min(100, Number(course.progress || 0)));
     return `
@@ -364,6 +372,7 @@
     const workflows = state.site.workflows || { stages: [], projects: [] };
     const plans = state.site.plans || [];
     const heroImage = profile.aesthetic?.hero || profile.aesthetic?.poster || "resources/uploads/vintage-library-hero.png";
+    const heroBackground = assetUrl(heroImage);
     const totalNotes = (state.site.posts || []).length + (state.site.diary || []).length + courses.length;
 
     app.innerHTML = `
@@ -395,7 +404,7 @@
         </aside>
 
         <section class="library-main">
-          <section class="library-hero" style="--hero-image:url('${escapeHtml(heroImage)}')">
+          <section class="library-hero" style="--hero-image:url('${escapeHtml(heroBackground)}')">
             <div class="hero-copy">
               <span class="script-kicker">Bibliotheca Geoffrey</span>
               <h2>Geoffrey 的研究书房</h2>
@@ -457,7 +466,7 @@
             </div>
           </section>
 
-          <section class="library-section compact">
+          <section class="library-section compact friends-section">
             <div class="ornate-heading">
               <div>
                 <h2>${icon("link")}友链</h2>
@@ -468,7 +477,7 @@
             <div class="library-friends">${renderFriendTiles(3)}</div>
           </section>
 
-          <section class="library-section compact">
+          <section class="library-section compact plan-section">
             <div class="ornate-heading">
               <div>
                 <h2>${icon("calendar-check")}计划</h2>
