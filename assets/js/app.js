@@ -444,8 +444,8 @@
         key: "about",
         href: "#/about",
         icon: "user-round",
-        title: "关于 / 归档",
-        subtitle: "人物肖像",
+        title: "About me",
+        subtitle: "简历 / 自我介绍",
         kind: "portrait",
         style: "--x:22%;--y:29%;--w:14%;--h:20%;--z:1;"
       },
@@ -463,7 +463,7 @@
         href: "#/resources",
         icon: "archive",
         title: "资源抽屉",
-        subtitle: "PDF / 数据 / 文件",
+        subtitle: "数据库",
         kind: "drawer",
         style: "--x:49%;--y:54%;--w:29%;--h:17%;--z:4;"
       },
@@ -480,8 +480,8 @@
         key: "friends",
         href: "#/friends",
         icon: "music-2",
-        title: "钢琴与友链",
-        subtitle: "同伴 / 音乐",
+        title: "友链",
+        subtitle: "欢迎联系",
         kind: "piano",
         style: "--x:82%;--y:48%;--w:25%;--h:28%;--z:5;"
       },
@@ -538,19 +538,8 @@
             <div>${renderLibraryMetric("book-open", "课程", String(courses.length))}</div>
           </div>
 
-          <aside class="room-music-card">
-            <div class="vinyl-mark">${icon("music-2")}</div>
-            <div>
-              <span>正在聆听</span>
-              <strong>Piano Sonata No.14</strong>
-              <small>Beethoven · Moonlight</small>
-            </div>
-            <div class="music-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-          </aside>
-
           <blockquote class="room-quote">
-            <p>我从未止步于抵达答案的旅程。</p>
-            <cite>Per aspera ad astra.</cite>
+            <p>世界很广阔 跟背影捉迷藏</p>
           </blockquote>
         </div>
       </section>
